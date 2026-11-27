@@ -311,6 +311,10 @@
         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <i data-lucide="store" class="w-3.5 h-3.5 text-emerald-600"></i> Receipt Header & Shop Settings
         </h2>
+          <div class="mb-3">
+          <button type="button" type="file" id="shop-logo-input" accept="image/*" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 transition active:scale-95">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Logo
+          </button></div>
 
         <div>
           <label class="block text-[11px] font-semibold text-slate-500 mb-1">Business / Shop Name</label>
@@ -1189,6 +1193,32 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
+    // 1. Convert uploaded image to Base64 and save to localStorage
+document.getElementById('shop-logo-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    localStorage.setItem('quickbill_shop_logo', event.target.result);
+    updateReceiptLogo();
+  };
+  reader.readAsDataURL(file);
+});
+
+// 2. Load saved logo into the receipt preview
+function updateReceiptLogo() {
+  const savedLogo = localStorage.getItem('quickbill_shop_logo');
+  const logoImg = document.getElementById('receipt-logo-preview');
+  
+  if (savedLogo && logoImg) {
+    logoImg.src = savedLogo;
+    logoImg.classList.remove('hidden');
+  }
+}
+
+// Run when page loads so existing logo stays visible
+window.addEventListener('DOMContentLoaded', updateReceiptLogo);
   </script>
 </body>
 </html>
