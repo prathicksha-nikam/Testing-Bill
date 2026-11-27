@@ -52,7 +52,6 @@
         position: fixed !important;
         left: 0 !important;
         top: 0 !important;
-        width: 100% !important;
         margin: 0 !important;
         padding: 4mm !important;
         background: #ffffff !important;
@@ -77,7 +76,7 @@
           <i data-lucide="receipt" class="w-5 h-5 stroke-[2.5]"></i>
         </div>
         <div>
-          <h1 id="header-shop-name" class="font-bold text-base leading-tight tracking-tight">QuickBill POS</h1>
+          <h1 id="header-shop-name" class="font-bold text-base leading-tight tracking-tight">Testing Form</h1>
           <p class="text-[11px] text-slate-400">Bluetooth Thermal & Excel Ledger</p>
         </div>
       </div>
@@ -107,7 +106,7 @@
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-600"></i> Invoice Details
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-600"></i> Refinery Details
           </span>
           <span id="badge-saved-count" class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
             0 Bills Saved
@@ -706,6 +705,48 @@
       openReceiptModal(bill);
       setTimeout(() => window.print(), 300);
     }
+    // Inside your function that adds a new item row to #items-container:
+const rowHtml = `
+  <div class="item-row grid grid-cols-12 gap-1.5 items-center border-b border-slate-100 pb-2">
+    <div class="col-span-5 space-y-1">
+      <input type="text" placeholder="Item description" class="item-name w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg">
+      <input type="file" accept="image/*" onchange="handleItemImage(this)" class="item-img-input w-full text-[10px] text-slate-500">
+      <input type="hidden" class="item-img-data" value="">
+    </div>
+    <input type="number" value="1" min="1" class="item-qty col-span-2 px-1 py-1.5 text-xs text-center border border-slate-200 rounded-lg">
+    <input type="number" value="0" min="0" class="item-rate col-span-3 px-1 py-1.5 text-xs text-right border border-slate-200 rounded-lg">
+    <div class="item-total col-span-2 text-right text-xs font-bold text-slate-700">0.00</div>
+  </div>
+`;
+function handleItemImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const row = input.closest('.item-row');
+    row.querySelector('.item-img-data').value = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+// Inside your loop building itemsHtml in openReceiptModal():
+const itemImg = row.querySelector('.item-img-data')?.value;
+const imgTag = itemImg 
+  ? `<img src="${itemImg}" class="w-10 h-10 object-cover rounded border border-slate-200 my-1">` 
+  : '';
+
+itemsHtml += `
+  <div class="flex justify-between items-center py-1 border-b border-dashed border-slate-300">
+    <div class="flex items-center gap-2">
+      ${imgTag}
+      <div>
+        <div class="font-bold">${name}</div>
+        <div class="text-[10px]">${qty} x ${rate.toFixed(2)}</div>
+      </div>
+    </div>
+    <div class="font-bold">${total.toFixed(2)}</div>
+  </div>
+`;
 
     // ==================== WEB BLUETOOTH ESC/POS PRINTING ====================
     async function connectBluetoothPrinter() {
