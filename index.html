@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Testing Form — Bluetooth & Excel Billing</title>
+  <title>Testing Form — Excel Billing</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,21 +16,14 @@
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 
   <style>
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: #f1f5f9;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: none;
+      visibility: hidden;
     }
 
     .font-mono-receipt {
@@ -90,10 +83,6 @@ input[type="number"] {
     margin: 6mm;
   }
 
-  body * {
-    visibility: hidden;
-  }
-
   #printable-receipt-area,
   #printable-receipt-area * {
     visibility: visible;
@@ -124,7 +113,7 @@ input[type="number"] {
         </div>
         <div>
           <h1 id="header-shop-name" class="font-bold text-base leading-tight tracking-tight">Testing Form</h1>
-          <p class="text-[11px] text-slate-400">Billing Form & Excel Ledger</p>
+          <p class="text-[11px] text-slate-400">Testing Form & Excel Ledger</p>
         </div>
       </div>
 
@@ -153,7 +142,7 @@ input[type="number"] {
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-600"></i> Refinery Details
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-600"></i> Form Details
           </span>
           <span id="badge-saved-count" class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
             0 Bills Saved
@@ -162,11 +151,11 @@ input[type="number"] {
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">S.No.</label>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">S No.</label>
             <input id="bill-number" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white" />
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Date</label>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Bill Date</label>
             <input id="bill-date" type="date" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white" />
           </div>
         </div>
@@ -206,7 +195,47 @@ input[type="number"] {
         <!-- Dynamic Item Rows -->
         <div id="items-container" class="space-y-2"></div>
 
-        
+        <!-- Tax, Discount & Payment Mode -->
+        <div class="pt-3 border-t border-slate-100 grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Tax / GST (%)</label>
+            <input id="bill-tax" type="number" min="0" step="0.1" value="0" oninput="recalculateBill()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-right focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Discount (<span class="currency-label">₹</span>)</label>
+            <input id="bill-discount" type="number" min="0" step="1" value="0" oninput="recalculateBill()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-right focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 mb-1">Payment</label>
+            <select id="bill-payment" class="w-full px-2 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500">
+              <option value="Cash">Cash</option>
+              <option value="UPI">UPI</option>
+              <option value="Card">Card</option>
+              <option value="Credit">Credit</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Totals Summary Box -->
+        <div class="bg-slate-900 text-white rounded-xl p-3.5 space-y-1.5">
+          <div class="flex justify-between text-xs text-slate-400">
+            <span>Subtotal (<span id="summary-item-count">0</span> items)</span>
+            <span id="summary-subtotal" class="font-semibold text-slate-200">₹0.00</span>
+          </div>
+          <div id="row-tax-summary" class="hidden justify-between text-xs text-slate-400">
+            <span>Tax / GST</span>
+            <span id="summary-tax" class="font-semibold text-slate-200">+₹0.00</span>
+          </div>
+          <div id="row-discount-summary" class="hidden justify-between text-xs text-emerald-400">
+            <span>Discount</span>
+            <span id="summary-discount" class="font-semibold">-₹0.00</span>
+          </div>
+          <div class="flex justify-between items-center pt-1.5 border-t border-slate-800">
+            <span class="text-sm font-bold text-slate-200">Grand Total</span>
+            <span id="summary-grand-total" class="text-xl font-extrabold text-emerald-400 tracking-tight">₹0.00</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Action Buttons -->
       <div class="grid grid-cols-2 gap-2.5">
@@ -284,11 +313,6 @@ input[type="number"] {
           <i data-lucide="store" class="w-3.5 h-3.5 text-emerald-600"></i> Receipt Header & Shop Settings
         </h2>
 
-        <div class="mb-3">
-          <label class="block text-[11px] font-semibold text-slate-600 mb-1">Shop Logo</label>
-          <input type="file" id="shop-logo-input" accept="image/*" class="w-full p-2 text-xs border border-slate-200 rounded-xl bg-white">
-        </div>
-
         <div>
           <label class="block text-[11px] font-semibold text-slate-500 mb-1">Business / Shop Name</label>
           <input id="set-shop-name" type="text" placeholder="e.g. Hari Om Silver House" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500" />
@@ -312,7 +336,7 @@ input[type="number"] {
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Thermal Paper Width</label>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1"> Paper Width</label>
             <select id="set-paper-width" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500">
               <option value="32">58mm (32 chars/line)</option>
               <option value="48">80mm (48 chars/line)</option>
@@ -428,11 +452,11 @@ input[type="number"] {
 
     let bills = [];
     let settings = {
-      shopName: 'Your Shop Nmae',
-      shopAddress: 'Your Shop Address',
+      shopName: 'QuickBill Store',
+      shopAddress: 'Main Market Road',
       shopPhone: '',
       currency: '₹',
-      paperWidth: ,
+      paperWidth: 32,
       footerNote: 'Thank you! Visit again.'
     };
 
@@ -459,12 +483,12 @@ input[type="number"] {
     }
 
     function applySettingsToUI() {
-      document.getElementById('header-shop-name').textContent = settings.shopName || 'Shop Name';
+      document.getElementById('header-shop-name').textContent = settings.shopName || 'QuickBill POS';
       document.getElementById('set-shop-name').value = settings.shopName;
       document.getElementById('set-shop-address').value = settings.shopAddress;
       document.getElementById('set-shop-phone').value = settings.shopPhone;
       document.getElementById('set-currency').value = settings.currency;
-      document.getElementById('set-paper-width').value = String(settings.paperWidth || );
+      document.getElementById('set-paper-width').value = String(settings.paperWidth || 32);
       document.getElementById('set-footer-note').value = settings.footerNote;
 
       document.querySelectorAll('.currency-label').forEach(el => {
@@ -475,11 +499,11 @@ input[type="number"] {
 
     function saveShopSettings() {
       settings = {
-        shopName: document.getElementById('set-shop-name').value.trim() || 'Shop Name',
+        shopName: document.getElementById('set-shop-name').value.trim() || 'QuickBill Store',
         shopAddress: document.getElementById('set-shop-address').value.trim(),
         shopPhone: document.getElementById('set-shop-phone').value.trim(),
         currency: document.getElementById('set-currency').value.trim() || '₹',
-        paperWidth: parseInt(document.getElementById('set-paper-width').value, 10) || ,
+        paperWidth: parseInt(document.getElementById('set-paper-width').value, 10) || 32,
         footerNote: document.getElementById('set-footer-note').value.trim() || 'Thank you!'
       };
       localStorage.setItem(STORAGE_SETTINGS_KEY, JSON.stringify(settings));
@@ -526,7 +550,7 @@ input[type="number"] {
     // ==================== BILL FORM LOGIC ====================
     function getNextBillNumber() {
       const nextNum = bills.length + 1;
-      return `${String(nextNum).padStart(4, '0')}`;
+      return `INV-${String(nextNum).padStart(4, '0')}`;
     }
 
     function getTodayDateString() {
@@ -541,6 +565,9 @@ input[type="number"] {
       document.getElementById('bill-date').value = getTodayDateString();
       document.getElementById('customer-name').value = '';
       document.getElementById('customer-phone').value = '';
+      document.getElementById('bill-tax').value = '0';
+      document.getElementById('bill-discount').value = '0';
+      document.getElementById('bill-payment').value = 'Cash';
 
       const container = document.getElementById('items-container');
       container.innerHTML = '';
@@ -553,7 +580,7 @@ input[type="number"] {
       if (notify) showToast('Form cleared');
     }
 
-    function addItemRow(name = '', weight = 1, touch = '') {
+    function addItemRow(name = '', qty = 1, rate = '') {
       const container = document.getElementById('items-container');
       const row = document.createElement('div');
       row.className = 'item-row grid grid-cols-12 gap-1.5 items-center';
@@ -576,8 +603,8 @@ input[type="number"] {
       if (container.children.length <= 1) {
         const row = btn.closest('.item-row');
         row.querySelector('.item-name').value = '';
-        row.querySelector('.item-weight').value = '1';
-        row.querySelector('.item-touch').value = '';
+        row.querySelector('.item-qty').value = '1';
+        row.querySelector('.item-rate').value = '';
         recalculateBill();
         return;
       }
@@ -591,13 +618,19 @@ input[type="number"] {
       let validCount = 0;
 
       rows.forEach(row => {
-        const qty = parseFloat(row.querySelector('.item-weight').value) || 0;
-        const rate = parseFloat(row.querySelector('.item-touch').value) || 0;
-        const lineTotal = weight * touch;
+        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
+        const lineTotal = qty * rate;
         row.querySelector('.item-line-total').textContent = lineTotal.toFixed(2);
-        if (weight > 0 && touch > 0) validCount++;
+        if (qty > 0 && rate > 0) validCount++;
         subtotal += lineTotal;
       });
+
+      const taxPct = parseFloat(document.getElementById('bill-tax').value) || 0;
+      const discount = parseFloat(document.getElementById('bill-discount').value) || 0;
+      const taxAmount = (subtotal * taxPct) / 100;
+      const grandTotal = Math.max(0, subtotal + taxAmount - discount);
+      const cur = settings.currency;
 
       document.getElementById('summary-item-count').textContent = validCount;
       document.getElementById('summary-subtotal').textContent = `${cur}${subtotal.toFixed(2)}`;
@@ -630,18 +663,19 @@ input[type="number"] {
       const billDate = document.getElementById('bill-date').value || getTodayDateString();
       const customerName = document.getElementById('customer-name').value.trim() || 'Walk-in Customer';
       const customerPhone = document.getElementById('customer-phone').value.trim();
+      const paymentMode = document.getElementById('bill-payment').value;
 
       const items = [];
       document.querySelectorAll('.item-row').forEach((row, idx) => {
         const name = row.querySelector('.item-name').value.trim();
-        const weight = parseFloat(row.querySelector('.item-weight').value) || 0;
-        const touch = parseFloat(row.querySelector('.item-touch').value) || 0;
+        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
         if (name || rate > 0) {
           items.push({
             name: name || `Item ${idx + 1}`,
-            weight,
-            touch,
-            total: Number((weight * touch).toFixed(2))
+            qty,
+            rate,
+            total: Number((qty * rate).toFixed(2))
           });
         }
       });
@@ -651,6 +685,12 @@ input[type="number"] {
         return null;
       }
 
+      const subtotal = items.reduce((sum, item) => sum + item.total, 0);
+      const taxPct = parseFloat(document.getElementById('bill-tax').value) || 0;
+      const discount = parseFloat(document.getElementById('bill-discount').value) || 0;
+      const taxAmount = Number(((subtotal * taxPct) / 100).toFixed(2));
+      const grandTotal = Number(Math.max(0, subtotal + taxAmount - discount).toFixed(2));
+
       return {
         id: Date.now().toString(),
         billNumber,
@@ -658,6 +698,7 @@ input[type="number"] {
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         customerName,
         customerPhone,
+        paymentMode,
         items,
         subtotal: Number(subtotal.toFixed(2)),
         taxPct,
@@ -695,48 +736,6 @@ input[type="number"] {
       openReceiptModal(bill);
       setTimeout(() => window.print(), 300);
     }
-    // Inside your function that adds a new item row to #items-container:
-const rowHtml = `
-  <div class="item-row grid grid-cols-12 gap-1.5 items-center border-b border-slate-100 pb-2">
-    <div class="col-span-5 space-y-1">
-      <input type="text" placeholder="Item description" class="item-name w-full px-2 py-1.5 text-xs border border-slate-200 rounded-lg">
-      <input type="file" accept="image/*" onchange="handleItemImage(this)" class="item-img-input w-full text-[10px] text-slate-500">
-      <input type="hidden" class="item-img-data" value="">
-    </div>
-    <input type="number" value="1" min="1" class="item-qty col-span-2 px-1 py-1.5 text-xs text-center border border-slate-200 rounded-lg">
-    <input type="number" value="0" min="0" class="item-rate col-span-3 px-1 py-1.5 text-xs text-right border border-slate-200 rounded-lg">
-    <div class="item-total col-span-2 text-right text-xs font-bold text-slate-700">0.00</div>
-  </div>
-`;
-function handleItemImage(input) {
-  const file = input.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const row = input.closest('.item-row');
-    row.querySelector('.item-img-data').value = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-// Inside your loop building itemsHtml in openReceiptModal():
-const itemImg = row.querySelector('.item-img-data')?.value;
-const imgTag = itemImg 
-  ? `<img src="${itemImg}" class="w-10 h-10 object-cover rounded border border-slate-200 my-1">` 
-  : '';
-
-itemsHtml += `
-  <div class="flex justify-between items-center py-1 border-b border-dashed border-slate-300">
-    <div class="flex items-center gap-2">
-      ${imgTag}
-      <div>
-        <div class="font-bold">${name}</div>
-        <div class="text-[10px]">${qty} x ${rate.toFixed(2)}</div>
-      </div>
-    </div>
-    <div class="font-bold">${total.toFixed(2)}</div>
-  </div>
-`;
 
     // ==================== WEB BLUETOOTH ESC/POS PRINTING ====================
     async function connectBluetoothPrinter() {
@@ -1191,32 +1190,6 @@ itemsHtml += `
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
-    // 1. Convert uploaded image to Base64 and save to localStorage
-document.getElementById('shop-logo-input').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    localStorage.setItem('quickbill_shop_logo', event.target.result);
-    updateReceiptLogo();
-  };
-  reader.readAsDataURL(file);
-});
-
-// 2. Load saved logo into the receipt preview
-function updateReceiptLogo() {
-  const savedLogo = localStorage.getItem('quickbill_shop_logo');
-  const logoImg = document.getElementById('receipt-logo-preview');
-  
-  if (savedLogo && logoImg) {
-    logoImg.src = savedLogo;
-    logoImg.classList.remove('hidden');
-  }
-}
-
-// Run when page loads so existing logo stays visible
-window.addEventListener('DOMContentLoaded', updateReceiptLogo);
   </script>
 </body>
 </html>
