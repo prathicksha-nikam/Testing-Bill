@@ -213,15 +213,6 @@ input[type="number"] {
             <label class="block text-[10px] font-bold text-slate-500 mb-1">Discount (<span class="currency-label">₹</span>)</label>
             <input id="bill-discount" type="number" min="0" step="1" value="0" oninput="recalculateBill()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-right focus:outline-none focus:border-emerald-500" />
           </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-1">Payment</label>
-            <select id="bill-payment" class="w-full px-2 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500">
-              <option value="Cash">Cash</option>
-              <option value="UPI">UPI</option>
-              <option value="Card">Card</option>
-              <option value="Credit">Credit</option>
-            </select>
-          </div>
         </div>
 
         <!-- Totals Summary Box -->
@@ -629,7 +620,7 @@ input[type="number"] {
       rows.forEach(row => {
         const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
         const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
-        const lineTotal = qty * rate;
+        const lineTotal = qty * (rate / 100);
         row.querySelector('.item-line-total').textContent = lineTotal.toFixed(2);
         if (qty > 0 && rate > 0) validCount++;
         subtotal += lineTotal;
