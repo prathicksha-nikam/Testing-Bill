@@ -16,7 +16,15 @@
   <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -116,7 +124,7 @@
         </div>
         <div>
           <h1 id="header-shop-name" class="font-bold text-base leading-tight tracking-tight">Testing Form</h1>
-          <p class="text-[11px] text-slate-400">Bluetooth Thermal & Excel Ledger</p>
+          <p class="text-[11px] text-slate-400">Billing Form & Excel Ledger</p>
         </div>
       </div>
 
@@ -189,9 +197,9 @@
         <!-- Column Labels -->
         <div class="grid grid-cols-12 gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">
           <div class="col-span-5">Item Name</div>
-          <div class="col-span-2 text-center">Qty</div>
-          <div class="col-span-2 text-right">Rate</div>
-          <div class="col-span-2 text-right">Total</div>
+          <div class="col-span-2 text-center">Weight</div>
+          <div class="col-span-2 text-right">Touch</div>
+          <div class="col-span-2 text-right">Pure</div>
           <div class="col-span-1"></div>
         </div>
 
@@ -491,7 +499,7 @@
     }
 
     function applySettingsToUI() {
-      document.getElementById('header-shop-name').textContent = settings.shopName || 'QuickBill POS';
+      document.getElementById('header-shop-name').textContent = settings.shopName || 'Testing Form';
       document.getElementById('set-shop-name').value = settings.shopName;
       document.getElementById('set-shop-address').value = settings.shopAddress;
       document.getElementById('set-shop-phone').value = settings.shopPhone;
@@ -507,7 +515,7 @@
 
     function saveShopSettings() {
       settings = {
-        shopName: document.getElementById('set-shop-name').value.trim() || 'QuickBill Store',
+        shopName: document.getElementById('set-shop-name').value.trim() || 'Testing Form',
         shopAddress: document.getElementById('set-shop-address').value.trim(),
         shopPhone: document.getElementById('set-shop-phone').value.trim(),
         currency: document.getElementById('set-currency').value.trim() || '₹',
