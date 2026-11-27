@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>QuickBill POS — Bluetooth & Excel Billing</title>
+  <title>Testing Form — Bluetooth & Excel Billing</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -117,11 +117,11 @@
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Bill Number</label>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">S.No.</label>
             <input id="bill-number" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white" />
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Bill Date</label>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Date</label>
             <input id="bill-date" type="date" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white" />
           </div>
         </div>
@@ -278,6 +278,11 @@
         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
           <i data-lucide="store" class="w-3.5 h-3.5 text-emerald-600"></i> Receipt Header & Shop Settings
         </h2>
+
+        <div class="mb-3">
+          <label class="block text-[11px] font-semibold text-slate-600 mb-1">Shop Logo</label>
+          <input type="file" id="shop-logo-input" accept="image/*" class="w-full p-2 text-xs border border-slate-200 rounded-xl bg-white">
+        </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-slate-500 mb-1">Business / Shop Name</label>
@@ -1156,6 +1161,32 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
+    // 1. Convert uploaded image to Base64 and save to localStorage
+document.getElementById('shop-logo-input').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    localStorage.setItem('quickbill_shop_logo', event.target.result);
+    updateReceiptLogo();
+  };
+  reader.readAsDataURL(file);
+});
+
+// 2. Load saved logo into the receipt preview
+function updateReceiptLogo() {
+  const savedLogo = localStorage.getItem('quickbill_shop_logo');
+  const logoImg = document.getElementById('receipt-logo-preview');
+  
+  if (savedLogo && logoImg) {
+    logoImg.src = savedLogo;
+    logoImg.classList.remove('hidden');
+  }
+}
+
+// Run when page loads so existing logo stays visible
+window.addEventListener('DOMContentLoaded', updateReceiptLogo);
   </script>
 </body>
 </html>
