@@ -17,6 +17,15 @@
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    }
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -459,7 +468,6 @@
       shopAddress: 'Main Market Road',
       shopPhone: '',
       currency: '₹',
-      paperWidth: 32,
       footerNote: 'Thank you! Visit again.'
     };
 
@@ -491,7 +499,6 @@
       document.getElementById('set-shop-address').value = settings.shopAddress;
       document.getElementById('set-shop-phone').value = settings.shopPhone;
       document.getElementById('set-currency').value = settings.currency;
-      document.getElementById('set-paper-width').value = String(settings.paperWidth || 32);
       document.getElementById('set-footer-note').value = settings.footerNote;
 
       document.querySelectorAll('.currency-label').forEach(el => {
@@ -506,7 +513,6 @@
         shopAddress: document.getElementById('set-shop-address').value.trim(),
         shopPhone: document.getElementById('set-shop-phone').value.trim(),
         currency: document.getElementById('set-currency').value.trim() || '₹',
-        paperWidth: parseInt(document.getElementById('set-paper-width').value, 10) || 32,
         footerNote: document.getElementById('set-footer-note').value.trim() || 'Thank you!'
       };
       localStorage.setItem(STORAGE_SETTINGS_KEY, JSON.stringify(settings));
@@ -553,7 +559,7 @@
     // ==================== BILL FORM LOGIC ====================
     function getNextBillNumber() {
       const nextNum = bills.length + 1;
-      return `INV-${String(nextNum).padStart(4, '0')}`;
+      return `${String(nextNum).padStart(4, '0')}`;
     }
 
     function getTodayDateString() {
