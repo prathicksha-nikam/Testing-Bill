@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Testing Form — Excel Billing</title>
+  <title>Testing Form — Excel Ledger & Half-A4 Print</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,25 +17,22 @@
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+      -webkit-appearance: none;
+      margin: 0;
     }
 
-input[type="number"] {
-  -moz-appearance: textfield;
-}
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: #f1f5f9;
       -webkit-tap-highlight-color: transparent;
       overscroll-behavior-y: none;
-    }
-
-    .font-mono-receipt {
-      font-family: 'JetBrains Mono', monospace;
     }
 
     /* Custom Scrollbar */
@@ -48,88 +45,106 @@ input[type="number"] {
       border-radius: 9999px;
     }
 
-    /* Certificate Preview & Print Styling */
-.cert-wrapper {
-  font-family: 'Times New Roman', serif;
-  border: 3px solid #1d5ba6;
-  padding: 3px;
-  background: #fff;
-  color: #1d5ba6;
-  box-sizing: border-box;
-}
+    /* Certificate / Half-A4 Print & Preview Styling */
+    .cert-wrapper {
+      font-family: 'Times New Roman', serif;
+      border: 3px solid #1d5ba6;
+      padding: 3px;
+      background: #fff;
+      color: #1d5ba6;
+      box-sizing: border-box;
+      width: 100%;
+    }
 
-.cert-inner {
-  border: 1.5px solid #1d5ba6;
-  padding: 10px 16px;
-  position: relative;
-}
+    .cert-inner {
+      border: 1.5px solid #1d5ba6;
+      padding: 12px 16px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 132mm;
+    }
 
-.cert-title {
-  font-family: Georgia, serif;
-  font-size: 32px;
-  font-weight: 900;
-  color: #c8232c;
-  letter-spacing: 0.5px;
-  line-height: 1;
-}
+    .cert-title {
+      font-family: Georgia, serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #c8232c;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
 
-.cert-banner {
-  background: #1d5ba6;
-  color: #fff;
-  font-family: Arial, sans-serif;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: 1.5px;
-  padding: 4px 18px;
-  display: inline-block;
-  clip-path: polygon(6% 0%, 94% 0%, 100% 50%, 94% 100%, 6% 100%, 0% 50%);
-}
+    .cert-banner {
+      background: #1d5ba6;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      padding: 4px 18px;
+      display: inline-block;
+      clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+    }
 
-@media print {
-  @page {
-    size: A5 landscape;
-    margin: 6mm;
-  }
+    /* Half of an A4 Sheet (A5 Landscape: 210mm x 148mm) */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
 
-  #printable-receipt-area,
-  #printable-receipt-area * {
-    visibility: visible;
-  }
+      body * {
+        visibility: hidden;
+      }
 
-  #printable-receipt-area {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-  }
-}
+      #printable-receipt-area,
+      #printable-receipt-area * {
+        visibility: visible;
+      }
+
+      #printable-receipt-area {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 210mm !important;
+        height: 148.5mm !important; /* Exact top half of A4 sheet */
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 7mm 8mm !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-bottom: 1px dashed #94a3b8 !important; /* Cut guide on A4 */
+        box-sizing: border-box !important;
+        overflow: hidden;
+      }
+
+      .cert-inner {
+        height: 132mm !important;
+        min-height: 132mm !important;
+      }
+    }
   </style>
 </head>
 <body class="text-slate-800 pb-24">
 
   <!-- Top App Bar -->
   <header class="sticky top-0 z-30 bg-slate-900 text-white shadow-md">
-    <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 shadow-inner">
-          <i data-lucide="receipt" class="w-5 h-5 stroke-[2.5]"></i>
+          <i data-lucide="award" class="w-5 h-5 stroke-[2.5]"></i>
         </div>
         <div>
           <h1 id="header-shop-name" class="font-bold text-base leading-tight tracking-tight">Testing Form</h1>
-          <p class="text-[11px] text-slate-400">Testing Form & Excel Ledger</p>
+          <p id="header-shop-sub" class="text-[11px] text-slate-400">Half-A4 Testing Certificate & Excel Ledger</p>
         </div>
       </div>
 
-      <!-- Bluetooth Connection Pill -->
-      <button id="btn-bt-header" onclick="connectBluetoothPrinter()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 transition active:scale-95">
-        <span id="bt-status-dot" class="w-2 h-2 rounded-full bg-rose-500"></span>
-        <i data-lucide="bluetooth" class="w-3.5 h-3.5 text-sky-400"></i>
-        <span id="bt-status-text">Connect</span>
+      <button onclick="switchTab('settings')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-800 hover:bg-slate-700 border border-slate-700 transition active:scale-95">
+        <i data-lucide="store" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <span>Shop Info</span>
       </button>
     </div>
   </header>
@@ -141,19 +156,19 @@ input[type="number"] {
   </div>
 
   <!-- Main Container -->
-  <main class="max-w-xl mx-auto px-3.5 pt-4">
+  <main class="max-w-2xl mx-auto px-3.5 pt-4">
 
-    <!-- ==================== TAB 1: NEW BILL ==================== -->
+    <!-- ==================== TAB 1: TESTING FORM ==================== -->
     <section id="tab-new-bill" class="space-y-3.5">
 
-      <!-- Bill Meta Card -->
+      <!-- Form Meta Card -->
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-600"></i> Form Details
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-600"></i> Testing Details
           </span>
           <span id="badge-saved-count" class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
-            0 Bills Saved
+            0 Records Saved
           </span>
         </div>
 
@@ -163,7 +178,7 @@ input[type="number"] {
             <input id="bill-number" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white" />
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Bill Date</label>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Date</label>
             <input id="bill-date" type="date" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white" />
           </div>
         </div>
@@ -184,7 +199,7 @@ input[type="number"] {
       <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-emerald-600"></i> Items / Particulars
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i> Items / Particulars
           </span>
           <button type="button" onclick="addItemRow()" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 transition active:scale-95">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Item
@@ -193,64 +208,50 @@ input[type="number"] {
 
         <!-- Column Labels -->
         <div class="grid grid-cols-12 gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">
-          <div class="col-span-5">Item Name</div>
+          <div class="col-span-4">Item Name</div>
           <div class="col-span-2 text-center">Weight</div>
-          <div class="col-span-2 text-right">Touch</div>
-          <div class="col-span-2 text-right">Pure</div>
-          <div class="col-span-1"></div>
+          <div class="col-span-2 text-center">Touch</div>
+          <div class="col-span-2 text-center">Pure</div>
+          <div class="col-span-2 text-center">Image</div>
         </div>
 
         <!-- Dynamic Item Rows -->
         <div id="items-container" class="space-y-2"></div>
 
-        <!-- Tax, Discount & Payment Mode -->
-        <div class="pt-3 border-t border-slate-100 grid grid-cols-3 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-1">Tax / GST (%)</label>
-            <input id="bill-tax" type="number" min="0" step="0.1" value="0" oninput="recalculateBill()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-right focus:outline-none focus:border-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 mb-1">Discount (<span class="currency-label">₹</span>)</label>
-            <input id="bill-discount" type="number" min="0" step="1" value="0" oninput="recalculateBill()" class="w-full px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-right focus:outline-none focus:border-emerald-500" />
-          </div>
-        </div>
-
-        <!-- Totals Summary Box -->
-        <div class="bg-slate-900 text-white rounded-xl p-3.5 space-y-1.5">
-          <div class="flex justify-between text-xs text-slate-400">
-            <span>Subtotal (<span id="summary-item-count">0</span> items)</span>
-            <span id="summary-subtotal" class="font-semibold text-slate-200">₹0.00</span>
-          </div>
-          <div id="row-tax-summary" class="hidden justify-between text-xs text-slate-400">
-            <span>Tax / GST</span>
-            <span id="summary-tax" class="font-semibold text-slate-200">+₹0.00</span>
-          </div>
-          <div id="row-discount-summary" class="hidden justify-between text-xs text-emerald-400">
-            <span>Discount</span>
-            <span id="summary-discount" class="font-semibold">-₹0.00</span>
-          </div>
-          <div class="flex justify-between items-center pt-1.5 border-t border-slate-800">
-            <span class="text-sm font-bold text-slate-200">Grand Total</span>
-            <span id="summary-grand-total" class="text-xl font-extrabold text-emerald-400 tracking-tight">₹0.00</span>
+        <!-- Summary Box (No Tax / No Discount) -->
+        <div class="bg-slate-900 text-white rounded-xl p-3.5">
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-slate-800/80 rounded-lg p-2">
+              <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Total Items</p>
+              <p id="summary-item-count" class="text-base font-extrabold text-white mt-0.5">0</p>
+            </div>
+            <div class="bg-slate-800/80 rounded-lg p-2">
+              <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Total Weight</p>
+              <p id="summary-total-weight" class="text-base font-extrabold text-sky-400 mt-0.5">0.000 g</p>
+            </div>
+            <div class="bg-slate-800/80 rounded-lg p-2">
+              <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Total Pure</p>
+              <p id="summary-total-pure" class="text-base font-extrabold text-emerald-400 mt-0.5">0.000 g</p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="grid grid-cols-2 gap-2.5">
-        <button type="button" onclick="saveAndPrintBluetooth()" class="col-span-2 py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+        <button type="button" onclick="saveAndPreviewHalfA4()" class="col-span-2 py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition active:scale-[0.99]">
           <i data-lucide="printer" class="w-4 h-4"></i>
-          Save & Print via Bluetooth
+          Save & Print Half-A4 Certificate
         </button>
 
-        <button type="button" onclick="saveAndSystemPrint()" class="py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
-          <i data-lucide="file-check" class="w-4 h-4 text-sky-400"></i>
-          Save & PDF / AirPrint
+        <button type="button" onclick="previewHalfA4Only()" class="py-3 px-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
+          <i data-lucide="eye" class="w-4 h-4 text-sky-400"></i>
+          Preview Half-A4
         </button>
 
-        <button type="button" onclick="saveBillOnly()" class="py-3 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
+        <button type="button" onclick="saveRecordOnly()" class="py-3 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold text-xs flex items-center justify-center gap-1.5 transition active:scale-95">
           <i data-lucide="save" class="w-4 h-4 text-emerald-600"></i>
-          Save to Excel Only
+          Save to Ledger Only
         </button>
       </div>
 
@@ -268,9 +269,9 @@ input[type="number"] {
       <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-md space-y-3">
         <div class="flex items-start justify-between gap-2">
           <div>
-            <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Saved Sales Ledger</p>
-            <h2 id="ledger-total-revenue" class="text-2xl font-extrabold text-emerald-400 mt-0.5">₹0.00</h2>
-            <p id="ledger-total-count" class="text-xs text-slate-300 mt-0.5">0 invoices recorded</p>
+            <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Saved Testing Ledger</p>
+            <h2 id="ledger-total-count" class="text-2xl font-extrabold text-emerald-400 mt-0.5">0 Records</h2>
+            <p id="ledger-total-weights" class="text-xs text-slate-300 mt-0.5">Total Weight: 0.000 g | Pure: 0.000 g</p>
           </div>
           <button onclick="exportAllToExcel()" class="px-3.5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95 shrink-0">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
@@ -283,7 +284,7 @@ input[type="number"] {
       <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 space-y-2.5">
         <div class="relative">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-          <input id="search-query" type="text" oninput="renderHistoryList()" placeholder="Search by customer name, bill #, or phone..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white" />
+          <input id="search-query" type="text" oninput="renderHistoryList()" placeholder="Search by customer name, S No., or phone..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white" />
         </div>
 
         <div class="flex items-center gap-2">
@@ -293,737 +294,738 @@ input[type="number"] {
           <button onclick="clearSearchFilters()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold">
             Reset
           </button>
-          <button onclick="exportFilteredToExcel()" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold flex items-center gap-1">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i> Filtered .xlsx
+          <button onclick="exportFilteredToExcel()" class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold">
+            Export Filtered
           </button>
         </div>
       </div>
 
-      <!-- Saved Bills List -->
+      <!-- Saved Records List -->
       <div id="history-list" class="space-y-2.5"></div>
     </section>
 
-    <!-- ==================== TAB 3: SETTINGS & BLUETOOTH GUIDE ==================== -->
+    <!-- ==================== TAB 3: SHOP SETTINGS (PERSISTENT) ==================== -->
     <section id="tab-settings" class="hidden space-y-3.5">
-
-      <!-- Shop Profile Card -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-          <i data-lucide="store" class="w-3.5 h-3.5 text-emerald-600"></i> Receipt Header & Shop Settings
-        </h2>
-          <div class="mb-3">
-          <button type="button" type="file" id="shop-logo-input" accept="image/*" class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl border border-emerald-200 transition active:scale-95">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Logo
-          </button></div>
-
-        <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">Business / Shop Name</label>
-          <input id="set-shop-name" type="text" placeholder="e.g. Hari Om Silver House" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500" />
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-3.5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <i data-lucide="store" class="w-4 h-4 text-emerald-600"></i> Shop Details (Auto-Saved)
+          </span>
+          <span id="shop-saved-badge" class="text-[11px] font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-0.5 rounded-full border border-emerald-200">
+            Saved Permanently
+          </span>
         </div>
 
-        <div>
-          <label class="block text-[11px] font-semibold text-slate-500 mb-1">Shop Address / Tagline</label>
-          <input id="set-shop-address" type="text" placeholder="e.g. Main Market Road, Vita" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500" />
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Save your shop details once below. They stay saved in your browser automatically for every certificate and print—no need to refill each time.
+        </p>
+
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Shop / Lab Name <span class="text-rose-500">*</span></label>
+            <input id="setting-shop-name" type="text" placeholder="e.g. HARI OM TESTING CENTER" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500 focus:bg-white" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Tagline / Subtitle</label>
+            <input id="setting-shop-tagline" type="text" placeholder="e.g. Computerized Gold & Silver X-Ray Testing" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Shop Address</label>
+            <textarea id="setting-shop-address" rows="2" placeholder="e.g. Shop No. 12, Saraf Bazar, Pune, Maharashtra" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Contact Phone(s)</label>
+              <input id="setting-shop-phone" type="text" placeholder="e.g. +91 98765 43210" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Certificate Footer Note</label>
+              <input id="setting-shop-footer" type="text" placeholder="e.g. Authorized Signatory" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white" />
+            </div>
+          </div>
+
+          <!-- Shop Logo Upload -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Shop Logo (Optional)</label>
+            <div class="flex items-center gap-3">
+              <div id="shop-logo-preview-box" class="w-14 h-14 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                <i data-lucide="image" class="w-5 h-5 text-slate-400"></i>
+              </div>
+              <div class="flex-1 flex flex-wrap gap-2">
+                <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                  <i data-lucide="upload" class="w-3.5 h-3.5"></i> Upload Logo
+                  <input id="setting-shop-logo" type="file" accept="image/*" onchange="handleShopLogoUpload(event)" class="hidden" />
+                </label>
+                <button type="button" onclick="removeShopLogo()" class="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold">
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Shop Phone / GSTIN</label>
-            <input id="set-shop-phone" type="text" placeholder="e.g. +91 98765 43210" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Currency Symbol</label>
-            <input id="set-currency" type="text" value="₹" maxlength="4" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold focus:outline-none focus:border-emerald-500" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1"> Paper Width</label>
-            <select id="set-paper-width" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold focus:outline-none focus:border-emerald-500">
-              <option value="32">58mm (32 chars/line)</option>
-              <option value="48">80mm (48 chars/line)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">Footer Thank You Note</label>
-            <input id="set-footer-note" type="text" value="Thank you! Visit again." class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-emerald-500" />
-          </div>
-        </div>
-
-        <button onclick="saveShopSettings()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition active:scale-95">
-          Save Shop Settings
+        <button type="button" onclick="saveShopSettings()" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition active:scale-[0.99]">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          Save Shop Details Permanently
         </button>
-      </div>
-
-      <!-- Bluetooth & Device Compatibility Guide -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-2.5">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-          <i data-lucide="smartphone" class="w-3.5 h-3.5 text-sky-600"></i> Android & iOS Setup Guide
-        </h2>
-        <div class="text-xs text-slate-600 space-y-2 leading-relaxed">
-          <div class="p-2.5 rounded-xl bg-sky-50 border border-sky-100">
-            <p class="font-bold text-sky-900">Android (Direct Bluetooth ESC/POS):</p>
-            <p class="mt-0.5">Open this app in <strong>Google Chrome</strong>, tap <strong>Connect</strong> at the top, pair your 58mm/80mm thermal printer, and tap <em>Save & Print via Bluetooth</em>. Install to Home Screen via Chrome menu → <em>Add to Home screen</em>.</p>
-          </div>
-          <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-100">
-            <p class="font-bold text-amber-900">iPhone / iPad (iOS Safari):</p>
-            <p class="mt-0.5">Apple Safari blocks direct Web Bluetooth. On iOS, tap <strong>Save & PDF / AirPrint</strong> to print directly via AirPrint or share the receipt to your printer's companion app (e.g., RawBT / Thermer / Star / Epson) or WhatsApp. Tap Safari's <em>Share → Add to Home Screen</em> to install as an app.</p>
-          </div>
-        </div>
-
-        <button onclick="testBluetoothPrint()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs flex items-center justify-center gap-1.5">
-          <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print Test Slip
-        </button>
-      </div>
-
-      <!-- Backup & Danger Zone -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 space-y-2.5">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Data Management</h2>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="exportAllToExcel()" class="py-2 px-3 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-xs">
-            Download Full Excel
-          </button>
-          <button onclick="clearAllHistory()" class="py-2 px-3 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 font-semibold text-xs">
-            Delete All Bills
-          </button>
-        </div>
       </div>
     </section>
-
   </main>
 
-  <!-- ==================== RECEIPT PREVIEW MODAL ==================== -->
-  <div id="receipt-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/70 backdrop-blur-xs p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[90vh]">
-      <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
-        <span class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-          <i data-lucide="receipt" class="w-4 h-4 text-emerald-400"></i> Receipt Preview
-        </span>
-        <button onclick="closeReceiptModal()" class="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <!-- Thermal Receipt Paper Preview -->
-      <div class="p-4 overflow-y-auto bg-slate-100 flex justify-center">
-        <div id="printable-receipt-area" class="bg-white text-black font-mono-receipt text-[11px] leading-snug p-4 shadow-md border border-slate-200 w-[290px]">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-
-      <!-- Modal Actions -->
-      <div class="p-3 bg-white border-t border-slate-200 grid grid-cols-3 gap-2">
-        <button onclick="printModalViaBluetooth()" class="py-2.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex flex-col items-center justify-center gap-1">
-          <i data-lucide="bluetooth" class="w-4 h-4"></i>
-          <span>BT Print</span>
-        </button>
-        <button onclick="window.print()" class="py-2.5 px-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs flex flex-col items-center justify-center gap-1">
-          <i data-lucide="printer" class="w-4 h-4 text-sky-400"></i>
-          <span>PDF / Print</span>
-        </button>
-        <button onclick="shareReceiptText()" class="py-2.5 px-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 font-bold text-xs flex flex-col items-center justify-center gap-1">
-          <i data-lucide="share-2" class="w-4 h-4"></i>
-          <span>Share</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== BOTTOM NAVIGATION BAR ==================== -->
-  <nav class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 shadow-[0_-4px_12px_rgba(0,0,0,0.04)]">
-    <div class="max-w-xl mx-auto grid grid-cols-3">
-      <button onclick="switchTab('new-bill')" id="nav-new-bill" class="py-2.5 flex flex-col items-center justify-center gap-1 text-emerald-600 font-bold text-[11px]">
-        <i data-lucide="plus-circle" class="w-5 h-5"></i>
-        <span>New Bill</span>
+  <!-- Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 shadow-lg">
+    <div class="max-w-2xl mx-auto grid grid-cols-3">
+      <button id="nav-new-bill" onclick="switchTab('new-bill')" class="py-2.5 flex flex-col items-center justify-center gap-1 text-emerald-600 font-bold text-[11px]">
+        <i data-lucide="file-plus-2" class="w-5 h-5"></i>
+        <span>Testing Form</span>
       </button>
-      <button onclick="switchTab('history')" id="nav-history" class="py-2.5 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-700 font-semibold text-[11px]">
-        <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
-        <span>History & Excel</span>
+      <button id="nav-history" onclick="switchTab('history')" class="py-2.5 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 font-semibold text-[11px]">
+        <i data-lucide="history" class="w-5 h-5"></i>
+        <span>Saved Ledger</span>
       </button>
-      <button onclick="switchTab('settings')" id="nav-settings" class="py-2.5 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-700 font-semibold text-[11px]">
+      <button id="nav-settings" onclick="switchTab('settings')" class="py-2.5 flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-slate-600 font-semibold text-[11px]">
         <i data-lucide="settings" class="w-5 h-5"></i>
-        <span>Shop Settings</span>
+        <span>Shop Details</span>
       </button>
     </div>
   </nav>
 
+  <!-- Half-A4 Certificate Print & Preview Modal -->
+  <div id="print-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-xs overflow-y-auto p-3 sm:p-6">
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+      <!-- Modal Header -->
+      <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-sm">Half-A4 Certificate Preview</h3>
+          <p class="text-[11px] text-slate-400">Fits top half of an A4 sheet (210mm × 148.5mm)</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition active:scale-95">
+            <i data-lucide="printer" class="w-4 h-4"></i> Print Half-A4
+          </button>
+          <button onclick="closePrintModal()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Area -->
+      <div class="p-4 bg-slate-100 overflow-x-auto">
+        <div id="printable-receipt-area" class="mx-auto bg-white shadow-md" style="width: 210mm; min-height: 148.5mm; padding: 7mm 8mm;">
+          <!-- Dynamic Certificate Content Injected Here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Zoom Preview Modal -->
+  <div id="image-preview-modal" onclick="closeImagePreview()" class="fixed inset-0 z-50 hidden bg-slate-950/85 items-center justify-center p-4">
+    <div class="relative max-w-md w-full bg-white rounded-2xl p-2 shadow-2xl" onclick="event.stopPropagation()">
+      <button onclick="closeImagePreview()" class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <img id="zoomed-item-image" src="" alt="Item Preview" class="w-full max-h-[70vh] object-contain rounded-xl" />
+      <p id="zoomed-item-caption" class="text-center text-xs font-bold text-slate-700 py-2"></p>
+    </div>
+  </div>
+
   <script>
-    // ==================== STATE & STORAGE KEYS ====================
-    const STORAGE_BILLS_KEY = 'quickbill_pos_bills_v1';
-    const STORAGE_SETTINGS_KEY = 'quickbill_pos_settings_v1';
+    // ==================== STORAGE KEYS ====================
+    const STORAGE_KEY_RECORDS = 'testing_form_records_v2';
+    const STORAGE_KEY_SHOP = 'testing_form_shop_details_v2';
 
-    let bills = [];
-    let settings = {
-      shopName: 'QuickBill Store',
-      shopAddress: 'Main Market Road',
-      shopPhone: '',
-      currency: '₹',
-      footerNote: 'Thank you! Visit again.'
+    // ==================== STATE ====================
+    let records = [];
+    let shopSettings = {
+      name: 'TESTING CENTER',
+      tagline: 'Computerized Gold & Silver Testing Certificate',
+      address: '',
+      phone: '',
+      footer: 'Authorized Signatory',
+      logo: ''
     };
-
-    // Bluetooth Printer State
-    let btDevice = null;
-    let btCharacteristic = null;
-    let activeModalBill = null;
+    let rowCounter = 0;
 
     // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', () => {
-      loadSettings();
-      loadBills();
-      initNewBillForm();
-      renderHistoryList();
+      loadShopSettings();
+      loadRecords();
+      setDefaultFormMeta();
+      addItemRow(); // Start with 1 clean row
       lucide.createIcons();
     });
 
-    function loadSettings() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_SETTINGS_KEY));
-        if (saved) settings = { ...settings, ...saved };
-      } catch (e) {}
-      applySettingsToUI();
+    function setDefaultFormMeta() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('bill-date').value = today;
+      document.getElementById('bill-number').value = getNextSerialNumber();
     }
 
-    function applySettingsToUI() {
-      document.getElementById('header-shop-name').textContent = settings.shopName || 'QuickBill POS';
-      document.getElementById('set-shop-name').value = settings.shopName;
-      document.getElementById('set-shop-address').value = settings.shopAddress;
-      document.getElementById('set-shop-phone').value = settings.shopPhone;
-      document.getElementById('set-currency').value = settings.currency;
-      document.getElementById('set-footer-note').value = settings.footerNote;
+    function getNextSerialNumber() {
+      if (records.length === 0) return '101';
+      const maxNo = records.reduce((max, r) => {
+        const num = parseInt(String(r.billNumber).replace(/\D/g, ''), 10);
+        return !isNaN(num) && num > max ? num : max;
+      }, 100);
+      return String(maxNo + 1);
+    }
 
-      document.querySelectorAll('.currency-label').forEach(el => {
-        el.textContent = settings.currency;
-      });
-      recalculateBill();
+    // ==================== SHOP SETTINGS (SAVE ONCE, PERSIST FOREVER) ====================
+    function loadShopSettings() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_SHOP);
+        if (saved) {
+          shopSettings = { ...shopSettings, ...JSON.parse(saved) };
+        }
+      } catch (e) {
+        console.error('Failed to load shop settings:', e);
+      }
+      applyShopSettingsToUI();
+    }
+
+    function applyShopSettingsToUI() {
+      document.getElementById('header-shop-name').textContent = shopSettings.name || 'Testing Form';
+      if (shopSettings.tagline) {
+        document.getElementById('header-shop-sub').textContent = shopSettings.tagline;
+      }
+
+      document.getElementById('setting-shop-name').value = shopSettings.name || '';
+      document.getElementById('setting-shop-tagline').value = shopSettings.tagline || '';
+      document.getElementById('setting-shop-address').value = shopSettings.address || '';
+      document.getElementById('setting-shop-phone').value = shopSettings.phone || '';
+      document.getElementById('setting-shop-footer').value = shopSettings.footer || 'Authorized Signatory';
+
+      const logoBox = document.getElementById('shop-logo-preview-box');
+      if (shopSettings.logo) {
+        logoBox.innerHTML = `<img src="${shopSettings.logo}" alt="Shop Logo" class="w-full h-full object-contain" />`;
+      } else {
+        logoBox.innerHTML = `<i data-lucide="image" class="w-5 h-5 text-slate-400"></i>`;
+        lucide.createIcons();
+      }
     }
 
     function saveShopSettings() {
-      settings = {
-        shopName: document.getElementById('set-shop-name').value.trim() || 'QuickBill Store',
-        shopAddress: document.getElementById('set-shop-address').value.trim(),
-        shopPhone: document.getElementById('set-shop-phone').value.trim(),
-        currency: document.getElementById('set-currency').value.trim() || '₹',
-        footerNote: document.getElementById('set-footer-note').value.trim() || 'Thank you!'
-      };
-      localStorage.setItem(STORAGE_SETTINGS_KEY, JSON.stringify(settings));
-      applySettingsToUI();
-      showToast('Shop settings saved');
-    }
-
-    function loadBills() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_BILLS_KEY));
-        if (Array.isArray(saved)) bills = saved;
-      } catch (e) {
-        bills = [];
-      }
-      updateSavedCountBadge();
-    }
-
-    function persistBills() {
-      localStorage.setItem(STORAGE_BILLS_KEY, JSON.stringify(bills));
-      updateSavedCountBadge();
-    }
-
-    function updateSavedCountBadge() {
-      document.getElementById('badge-saved-count').textContent = `${bills.length} Bill${bills.length === 1 ? '' : 's'} Saved`;
-    }
-
-    // ==================== NAVIGATION ====================
-    function switchTab(tabName) {
-      ['new-bill', 'history', 'settings'].forEach(t => {
-        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabName);
-        const navBtn = document.getElementById(`nav-${t}`);
-        if (t === tabName) {
-          navBtn.classList.remove('text-slate-400', 'font-semibold');
-          navBtn.classList.add('text-emerald-600', 'font-bold');
-        } else {
-          navBtn.classList.remove('text-emerald-600', 'font-bold');
-          navBtn.classList.add('text-slate-400', 'font-semibold');
-        }
-      });
-      if (tabName === 'history') renderHistoryList();
-      lucide.createIcons();
-    }
-
-    // ==================== BILL FORM LOGIC ====================
-    function getNextBillNumber() {
-      const nextNum = bills.length + 1;
-      return `${String(nextNum).padStart(4, '0')}`;
-    }
-
-    function getTodayDateString() {
-      const now = new Date();
-      const offset = now.getTimezoneOffset();
-      const local = new Date(now.getTime() - offset * 60000);
-      return local.toISOString().split('T')[0];
-    }
-
-    function initNewBillForm() {
-      document.getElementById('bill-number').value = getNextBillNumber();
-      document.getElementById('bill-date').value = getTodayDateString();
-      document.getElementById('customer-name').value = '';
-      document.getElementById('customer-phone').value = '';
-      document.getElementById('bill-tax').value = '0';
-      document.getElementById('bill-discount').value = '0';
-      document.getElementById('bill-payment').value = 'Cash';
-
-      const container = document.getElementById('items-container');
-      container.innerHTML = '';
-      addItemRow();
-      recalculateBill();
-    }
-
-    function resetCurrentForm(notify = false) {
-      initNewBillForm();
-      if (notify) showToast('Form cleared');
-    }
-
-    function addItemRow(name = '', qty = 1, rate = '') {
-      const container = document.getElementById('items-container');
-      const row = document.createElement('div');
-      row.className = 'item-row grid grid-cols-12 gap-1.5 items-center';
-      row.innerHTML = `
-        <input type="text" placeholder="Item description" value="${escapeHtml(name)}" class="item-name col-span-5 px-2.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium focus:outline-none focus:border-emerald-500 focus:bg-white" />
-        <input type="number" min="0.01" step="any" value="${qty}" oninput="recalculateBill()" class="item-qty col-span-2 px-1.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-center focus:outline-none focus:border-emerald-500 focus:bg-white" />
-        <input type="number" min="0" step="any" placeholder="0" value="${rate}" oninput="recalculateBill()" class="item-rate col-span-2 px-1.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-right focus:outline-none focus:border-emerald-500 focus:bg-white" />
-        <div class="item-line-total col-span-2 text-right text-xs font-bold text-slate-700 truncate">0.00</div>
-        <button type="button" onclick="removeItemRow(this)" class="col-span-1 flex items-center justify-center text-slate-400 hover:text-rose-500 py-1.5">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-        </button>
-      `;
-      container.appendChild(row);
-      lucide.createIcons();
-      recalculateBill();
-    }
-
-    function removeItemRow(btn) {
-      const container = document.getElementById('items-container');
-      if (container.children.length <= 1) {
-        const row = btn.closest('.item-row');
-        row.querySelector('.item-name').value = '';
-        row.querySelector('.item-qty').value = '1';
-        row.querySelector('.item-rate').value = '';
-        recalculateBill();
+      const name = document.getElementById('setting-shop-name').value.trim();
+      if (!name) {
+        showToast('Please enter your Shop / Lab Name', 'error');
         return;
       }
-      btn.closest('.item-row').remove();
-      recalculateBill();
+
+      shopSettings.name = name;
+      shopSettings.tagline = document.getElementById('setting-shop-tagline').value.trim();
+      shopSettings.address = document.getElementById('setting-shop-address').value.trim();
+      shopSettings.phone = document.getElementById('setting-shop-phone').value.trim();
+      shopSettings.footer = document.getElementById('setting-shop-footer').value.trim() || 'Authorized Signatory';
+
+      localStorage.setItem(STORAGE_KEY_SHOP, JSON.stringify(shopSettings));
+      applyShopSettingsToUI();
+      showToast('Shop details saved permanently!');
+      switchTab('new-bill');
     }
 
-    function recalculateBill() {
-      const rows = document.querySelectorAll('.item-row');
-      let subtotal = 0;
-      let validCount = 0;
+    function handleShopLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      compressImageFile(file, 300, 0.85, (base64) => {
+        shopSettings.logo = base64;
+        localStorage.setItem(STORAGE_KEY_SHOP, JSON.stringify(shopSettings));
+        applyShopSettingsToUI();
+        showToast('Shop logo saved!');
+      });
+    }
 
-      rows.forEach(row => {
-        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-        const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
-        const lineTotal = qty * (rate / 100);
-        row.querySelector('.item-line-total').textContent = lineTotal.toFixed(2);
-        if (qty > 0 && rate > 0) validCount++;
-        subtotal += lineTotal;
+    function removeShopLogo() {
+      shopSettings.logo = '';
+      localStorage.setItem(STORAGE_KEY_SHOP, JSON.stringify(shopSettings));
+      applyShopSettingsToUI();
+      showToast('Shop logo removed');
+    }
+
+    // ==================== TAB NAVIGATION ====================
+    function switchTab(tabName) {
+      const tabs = ['new-bill', 'history', 'settings'];
+      tabs.forEach((t) => {
+        const section = document.getElementById(`tab-${t}`);
+        const navBtn = document.getElementById(`nav-${t}`);
+        if (t === tabName) {
+          section.classList.remove('hidden');
+          navBtn.classList.remove('text-slate-400');
+          navBtn.classList.add('text-emerald-600', 'font-bold');
+        } else {
+          section.classList.add('hidden');
+          navBtn.classList.add('text-slate-400');
+          navBtn.classList.remove('text-emerald-600', 'font-bold');
+        }
       });
 
-      const taxPct = parseFloat(document.getElementById('bill-tax').value) || 0;
-      const discount = parseFloat(document.getElementById('bill-discount').value) || 0;
-      const taxAmount = (subtotal * taxPct) / 100;
-      const grandTotal = Math.max(0, subtotal + taxAmount - discount);
-      const cur = settings.currency;
-
-      document.getElementById('summary-item-count').textContent = validCount;
-      document.getElementById('summary-subtotal').textContent = `${cur}${subtotal.toFixed(2)}`;
-
-      const taxRow = document.getElementById('row-tax-summary');
-      if (taxPct > 0) {
-        taxRow.classList.remove('hidden');
-        taxRow.classList.add('flex');
-        document.getElementById('summary-tax').textContent = `+${cur}${taxAmount.toFixed(2)} (${taxPct}%)`;
-      } else {
-        taxRow.classList.add('hidden');
-        taxRow.classList.remove('flex');
+      if (tabName === 'history') {
+        renderHistoryList();
       }
-
-      const discRow = document.getElementById('row-discount-summary');
-      if (discount > 0) {
-        discRow.classList.remove('hidden');
-        discRow.classList.add('flex');
-        document.getElementById('summary-discount').textContent = `-${cur}${discount.toFixed(2)}`;
-      } else {
-        discRow.classList.add('hidden');
-        discRow.classList.remove('flex');
-      }
-
-      document.getElementById('summary-grand-total').textContent = `${cur}${grandTotal.toFixed(2)}`;
     }
 
-    function collectBillFromForm() {
-      const billNumber = document.getElementById('bill-number').value.trim() || getNextBillNumber();
-      const billDate = document.getElementById('bill-date').value || getTodayDateString();
-      const customerName = document.getElementById('customer-name').value.trim() || 'Walk-in Customer';
+    // ==================== DYNAMIC ITEM ROWS (ITEM NAME, WEIGHT, TOUCH, PURE + ADD IMAGE BUTTON) ====================
+    function addItemRow(prefill = {}) {
+      rowCounter++;
+      const rowId = `item-row-${rowCounter}`;
+      const container = document.getElementById('items-container');
+
+      const rowEl = document.createElement('div');
+      rowEl.id = rowId;
+      rowEl.className = 'item-row bg-slate-50/80 border border-slate-200/90 rounded-xl p-2 space-y-1.5';
+      rowEl.dataset.image = prefill.image || '';
+
+      rowEl.innerHTML = `
+        <div class="grid grid-cols-12 gap-1.5 items-center">
+          <!-- Item Name (4 cols) -->
+          <div class="col-span-4">
+            <input type="text" placeholder="Item name" value="${escapeHtml(prefill.name || '')}"
+              oninput="recalculateTotals()"
+              class="item-name w-full px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-emerald-500" />
+          </div>
+
+          <!-- Weight (2 cols) -->
+          <div class="col-span-2">
+            <input type="number" step="0.001" min="0" placeholder="0.000" value="${prefill.weight || ''}"
+              oninput="calculateRowPure('${rowId}')"
+              class="item-weight w-full px-1.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-center text-slate-800 focus:outline-none focus:border-emerald-500" />
+          </div>
+
+          <!-- Touch % (2 cols) -->
+          <div class="col-span-2">
+            <input type="number" step="0.01" min="0" max="100" placeholder="0.00" value="${prefill.touch || ''}"
+              oninput="calculateRowPure('${rowId}')"
+              class="item-touch w-full px-1.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-center text-slate-800 focus:outline-none focus:border-emerald-500" />
+          </div>
+
+          <!-- Pure Weight (2 cols) -->
+          <div class="col-span-2">
+            <input type="number" step="0.001" min="0" placeholder="0.000" value="${prefill.pure || ''}"
+              oninput="recalculateTotals()"
+              class="item-pure w-full px-1.5 py-1.5 rounded-lg bg-emerald-50/70 border border-emerald-200 text-xs font-bold text-center text-emerald-800 focus:outline-none focus:border-emerald-500" />
+          </div>
+
+          <!-- Add Image Button & Delete Row (2 cols) -->
+          <div class="col-span-2 flex items-center justify-center gap-1">
+            <label title="Add Item Image" class="cursor-pointer flex-1 h-8 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 flex items-center justify-center gap-1 px-1.5 text-[10px] font-bold transition active:scale-95">
+              <i data-lucide="camera" class="w-3.5 h-3.5 shrink-0"></i>
+              <span class="img-btn-label">${prefill.image ? 'Change' : 'Add'}</span>
+              <input type="file" accept="image/*" capture="environment" onchange="handleRowImageSelect(event, '${rowId}')" class="hidden" />
+            </label>
+            <button type="button" onclick="removeItemRow('${rowId}')" title="Remove Item" class="w-7 h-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition shrink-0">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Attached Image Preview Strip (Shown when image is uploaded) -->
+        <div class="row-image-preview ${prefill.image ? 'flex' : 'hidden'} items-center justify-between bg-white border border-slate-200 rounded-lg px-2 py-1.5">
+          <div class="flex items-center gap-2">
+            <img src="${prefill.image || ''}" alt="Item" onclick="openRowImageZoom('${rowId}')" class="row-thumb w-10 h-10 rounded-md object-cover border border-slate-200 cursor-pointer" />
+            <div>
+              <p class="text-[11px] font-bold text-slate-700">Item Photo Attached</p>
+              <button type="button" onclick="openRowImageZoom('${rowId}')" class="text-[10px] text-sky-600 font-semibold hover:underline">Tap to view full image</button>
+            </div>
+          </div>
+          <button type="button" onclick="clearRowImage('${rowId}')" class="text-[11px] font-semibold text-rose-500 hover:text-rose-700 px-2 py-1 rounded-md hover:bg-rose-50">
+            Remove Photo
+          </button>
+        </div>
+      `;
+
+      container.appendChild(rowEl);
+      lucide.createIcons();
+      recalculateTotals();
+    }
+
+    function removeItemRow(rowId) {
+      const container = document.getElementById('items-container');
+      if (container.children.length <= 1) {
+        // Reset the single row instead of leaving empty container
+        const row = document.getElementById(rowId);
+        row.querySelector('.item-name').value = '';
+        row.querySelector('.item-weight').value = '';
+        row.querySelector('.item-touch').value = '';
+        row.querySelector('.item-pure').value = '';
+        clearRowImage(rowId);
+        recalculateTotals();
+        return;
+      }
+      const el = document.getElementById(rowId);
+      if (el) el.remove();
+      recalculateTotals();
+    }
+
+    function calculateRowPure(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const weight = parseFloat(row.querySelector('.item-weight').value) || 0;
+      const touch = parseFloat(row.querySelector('.item-touch').value) || 0;
+      const pureInput = row.querySelector('.item-pure');
+
+      if (weight > 0 && touch > 0) {
+        pureInput.value = ((weight * touch) / 100).toFixed(3);
+      } else if (weight === 0 || touch === 0) {
+        pureInput.value = '';
+      }
+      recalculateTotals();
+    }
+
+    function recalculateTotals() {
+      const rows = document.querySelectorAll('.item-row');
+      let validCount = 0;
+      let totalWeight = 0;
+      let totalPure = 0;
+
+      rows.forEach((row) => {
+        const name = row.querySelector('.item-name').value.trim();
+        const weight = parseFloat(row.querySelector('.item-weight').value) || 0;
+        const pure = parseFloat(row.querySelector('.item-pure').value) || 0;
+        const hasImage = Boolean(row.dataset.image);
+
+        if (name || weight > 0 || pure > 0 || hasImage) {
+          validCount++;
+        }
+        totalWeight += weight;
+        totalPure += pure;
+      });
+
+      document.getElementById('summary-item-count').textContent = validCount;
+      document.getElementById('summary-total-weight').textContent = `${totalWeight.toFixed(3)} g`;
+      document.getElementById('summary-total-pure').textContent = `${totalPure.toFixed(3)} g`;
+    }
+
+    // ==================== IMAGE HANDLING & COMPRESSION ====================
+    function handleRowImageSelect(event, rowId) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      compressImageFile(file, 450, 0.8, (compressedBase64) => {
+        const row = document.getElementById(rowId);
+        if (!row) return;
+
+        row.dataset.image = compressedBase64;
+        const previewBox = row.querySelector('.row-image-preview');
+        const thumb = row.querySelector('.row-thumb');
+        const btnLabel = row.querySelector('.img-btn-label');
+
+        thumb.src = compressedBase64;
+        previewBox.classList.remove('hidden');
+        previewBox.classList.add('flex');
+        btnLabel.textContent = 'Change';
+        recalculateTotals();
+        showToast('Item image attached!');
+      });
+
+      // Reset input so selecting the same photo again works
+      event.target.value = '';
+    }
+
+    function clearRowImage(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      row.dataset.image = '';
+      const previewBox = row.querySelector('.row-image-preview');
+      const thumb = row.querySelector('.row-thumb');
+      const btnLabel = row.querySelector('.img-btn-label');
+
+      thumb.src = '';
+      previewBox.classList.add('hidden');
+      previewBox.classList.remove('flex');
+      btnLabel.textContent = 'Add';
+      recalculateTotals();
+    }
+
+    function openRowImageZoom(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row || !row.dataset.image) return;
+      const name = row.querySelector('.item-name').value.trim() || 'Testing Item';
+      openImageZoom(row.dataset.image, name);
+    }
+
+    function openImageZoom(src, caption) {
+      if (!src) return;
+      document.getElementById('zoomed-item-image').src = src;
+      document.getElementById('zoomed-item-caption').textContent = caption || 'Item Image';
+      const modal = document.getElementById('image-preview-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeImagePreview() {
+      const modal = document.getElementById('image-preview-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function compressImageFile(file, maxDim, quality, callback) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL('image/jpeg', quality);
+          callback(dataUrl);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ==================== COLLECT & SAVE RECORD ====================
+    function collectCurrentFormRecord() {
+      const billNumber = document.getElementById('bill-number').value.trim() || getNextSerialNumber();
+      const billDate = document.getElementById('bill-date').value || new Date().toISOString().split('T')[0];
+      const customerName = document.getElementById('customer-name').value.trim();
       const customerPhone = document.getElementById('customer-phone').value.trim();
-      const paymentMode = document.getElementById('bill-payment').value;
+
+      if (!customerName) {
+        showToast('Please enter Customer Name', 'error');
+        document.getElementById('customer-name').focus();
+        return null;
+      }
 
       const items = [];
-      document.querySelectorAll('.item-row').forEach((row, idx) => {
+      document.querySelectorAll('.item-row').forEach((row) => {
         const name = row.querySelector('.item-name').value.trim();
-        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-        const rate = parseFloat(row.querySelector('.item-rate').value) || 0;
-        if (name || rate > 0) {
+        const weight = parseFloat(row.querySelector('.item-weight').value) || 0;
+        const touch = parseFloat(row.querySelector('.item-touch').value) || 0;
+        const pure = parseFloat(row.querySelector('.item-pure').value) || 0;
+        const image = row.dataset.image || '';
+
+        if (name || weight > 0 || touch > 0 || pure > 0 || image) {
           items.push({
-            name: name || `Item ${idx + 1}`,
-            qty,
-            rate,
-            total: Number((qty * rate).toFixed(2))
+            name: name || 'Item',
+            weight: weight.toFixed(3),
+            touch: touch.toFixed(2),
+            pure: pure.toFixed(3),
+            image
           });
         }
       });
 
       if (items.length === 0) {
-        showToast('Please add at least one item with a rate', true);
+        showToast('Please add at least one item', 'error');
         return null;
       }
 
-      const subtotal = items.reduce((sum, item) => sum + item.total, 0);
-      const taxPct = parseFloat(document.getElementById('bill-tax').value) || 0;
-      const discount = parseFloat(document.getElementById('bill-discount').value) || 0;
-      const taxAmount = Number(((subtotal * taxPct) / 100).toFixed(2));
-      const grandTotal = Number(Math.max(0, subtotal + taxAmount - discount).toFixed(2));
+      const totalWeight = items.reduce((sum, it) => sum + parseFloat(it.weight), 0).toFixed(3);
+      const totalPure = items.reduce((sum, it) => sum + parseFloat(it.pure), 0).toFixed(3);
 
       return {
-        id: Date.now().toString(),
+        id: 'rec_' + Date.now(),
         billNumber,
-        date: billDate,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        billDate,
         customerName,
         customerPhone,
-        paymentMode,
         items,
-        subtotal: Number(subtotal.toFixed(2)),
-        taxPct,
-        taxAmount,
-        discount: Number(discount.toFixed(2)),
-        grandTotal
+        totalWeight,
+        totalPure,
+        createdAt: new Date().toISOString()
       };
     }
 
-    function saveBillToLedger(bill) {
-      bills.unshift(bill);
-      persistBills();
-      initNewBillForm();
-    }
-
-    function saveBillOnly() {
-      const bill = collectBillFromForm();
-      if (!bill) return;
-      saveBillToLedger(bill);
-      showToast(`Bill ${bill.billNumber} saved to Excel ledger`);
-    }
-
-    async function saveAndPrintBluetooth() {
-      const bill = collectBillFromForm();
-      if (!bill) return;
-      saveBillToLedger(bill);
-      openReceiptModal(bill);
-      await printBillOverBluetooth(bill);
-    }
-
-    function saveAndSystemPrint() {
-      const bill = collectBillFromForm();
-      if (!bill) return;
-      saveBillToLedger(bill);
-      openReceiptModal(bill);
-      setTimeout(() => window.print(), 300);
-    }
-
-    // ==================== WEB BLUETOOTH ESC/POS PRINTING ====================
-    async function connectBluetoothPrinter() {
-      if (!navigator.bluetooth) {
-        showToast('Web Bluetooth not supported on this browser. Use Chrome on Android or PDF/AirPrint on iOS.', true);
-        return false;
-      }
-
+    function persistRecords() {
       try {
-        showToast('Scanning for Bluetooth thermal printers...');
-        btDevice = await navigator.bluetooth.requestDevice({
-          acceptAllDevices: true,
-          optionalServices: [
-            '000018f0-0000-1000-8000-00805f9b34fb',
-            '49535343-fe7d-4ae5-8fa9-9fafd205e455',
-            '0000ff00-0000-1000-8000-00805f9b34fb',
-            'e7810a71-73ae-499d-8c15-faa9aef0c3f2'
-          ]
-        });
+        localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(records));
+      } catch (e) {
+        showToast('Storage full! Export Excel and clear old records.', 'error');
+      }
+      updateSavedCountBadge();
+    }
 
-        btDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
-        const server = await btDevice.gatt.connect();
-        const services = await server.getPrimaryServices();
+    function loadRecords() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_RECORDS);
+        records = saved ? JSON.parse(saved) : [];
+      } catch (e) {
+        records = [];
+      }
+      updateSavedCountBadge();
+    }
 
-        btCharacteristic = null;
-        for (const service of services) {
-          const chars = await service.getCharacteristics();
-          for (const c of chars) {
-            if (c.properties.write || c.properties.writeWithoutResponse) {
-              btCharacteristic = c;
-              break;
+    function updateSavedCountBadge() {
+      document.getElementById('badge-saved-count').textContent = `${records.length} Records Saved`;
+    }
+
+    function saveRecordOnly() {
+      const record = collectCurrentFormRecord();
+      if (!record) return;
+
+      records.unshift(record);
+      persistRecords();
+      showToast(`Record #${record.billNumber} saved!`);
+      resetCurrentForm(false);
+    }
+
+    function saveAndPreviewHalfA4() {
+      const record = collectCurrentFormRecord();
+      if (!record) return;
+
+      records.unshift(record);
+      persistRecords();
+      showToast(`Record #${record.billNumber} saved!`);
+      renderHalfA4Certificate(record);
+      openPrintModal();
+      resetCurrentForm(false);
+    }
+
+    function previewHalfA4Only() {
+      const record = collectCurrentFormRecord();
+      if (!record) return;
+      renderHalfA4Certificate(record);
+      openPrintModal();
+    }
+
+    function resetCurrentForm(showNotification = false) {
+      document.getElementById('customer-name').value = '';
+      document.getElementById('customer-phone').value = '';
+      document.getElementById('items-container').innerHTML = '';
+      rowCounter = 0;
+      addItemRow();
+      setDefaultFormMeta();
+      if (showNotification) showToast('Form cleared');
+    }
+
+    // ==================== HALF-A4 CERTIFICATE RENDERING ====================
+    function renderHalfA4Certificate(record) {
+      const container = document.getElementById('printable-receipt-area');
+      const formattedDate = formatDisplayDate(record.billDate);
+
+      // Collect item images if available
+      const itemImages = record.items.filter((it) => it.image);
+
+      const itemRowsHtml = record.items.map((item, idx) => `
+        <tr style="border-bottom: 1px solid #cbd5e1;">
+          <td style="padding: 4px 6px; text-align: center; font-weight: 700;">${idx + 1}</td>
+          <td style="padding: 4px 6px; text-align: left; font-weight: 700;">${escapeHtml(item.name)}</td>
+          <td style="padding: 4px 6px; text-align: right; font-weight: 700;">${item.weight} g</td>
+          <td style="padding: 4px 6px; text-align: right; font-weight: 700; color: #c8232c;">${item.touch} %</td>
+          <td style="padding: 4px 6px; text-align: right; font-weight: 700;">${item.pure} g</td>
+          <td style="padding: 3px 6px; text-align: center;">
+            ${item.image
+              ? `<img src="${item.image}" alt="Item" style="width: 34px; height: 34px; object-fit: cover; border: 1px solid #1d5ba6; border-radius: 3px; display: inline-block;" />`
+              : `<span style="font-size: 10px; color: #94a3b8;">—</span>`
             }
-          }
-          if (btCharacteristic) break;
-        }
-
-        if (!btCharacteristic) {
-          throw new Error('No writable print characteristic found on printer.');
-        }
-
-        updateBluetoothUI(true, btDevice.name || 'Printer');
-        showToast(`Connected to ${btDevice.name || 'Bluetooth Printer'}`);
-        return true;
-      } catch (err) {
-        console.error(err);
-        updateBluetoothUI(false);
-        if (err.name !== 'NotFoundError') {
-          showToast(`Bluetooth error: ${err.message}`, true);
-        }
-        return false;
-      }
-    }
-
-    function onBluetoothDisconnected() {
-      btCharacteristic = null;
-      updateBluetoothUI(false);
-      showToast('Bluetooth printer disconnected', true);
-    }
-
-    function updateBluetoothUI(connected, name = 'Connect') {
-      const dot = document.getElementById('bt-status-dot');
-      const text = document.getElementById('bt-status-text');
-      if (connected) {
-        dot.classList.remove('bg-rose-500');
-        dot.classList.add('bg-emerald-400');
-        text.textContent = name.slice(0, 12);
-      } else {
-        dot.classList.remove('bg-emerald-400');
-        dot.classList.add('bg-rose-500');
-        text.textContent = 'Connect';
-      }
-    }
-
-    function buildEscPosPayload(bill) {
-      const width = settings.paperWidth || 32;
-      const divider = '-'.repeat(width) + '\n';
-      const doubleDivider = '='.repeat(width) + '\n';
-      const cur = settings.currency === '₹' ? 'Rs.' : settings.currency;
-
-      const ESC = '\x1B';
-      const GS = '\x1D';
-      const INIT = ESC + '@';
-      const ALIGN_CENTER = ESC + 'a\x01';
-      const ALIGN_LEFT = ESC + 'a\x00';
-      const BOLD_ON = ESC + 'E\x01';
-      const BOLD_OFF = ESC + 'E\x00';
-      const DOUBLE_HEIGHT = GS + '!\x11';
-      const NORMAL_SIZE = GS + '!\x00';
-
-      function padRow(left, right) {
-        const space = Math.max(1, width - left.length - right.length);
-        return left + ' '.repeat(space) + right + '\n';
-      }
-
-      let out = INIT;
-      out += ALIGN_CENTER + BOLD_ON + DOUBLE_HEIGHT;
-      out += `${settings.shopName}\n`;
-      out += NORMAL_SIZE + BOLD_OFF;
-      if (settings.shopAddress) out += `${settings.shopAddress}\n`;
-      if (settings.shopPhone) out += `Tel: ${settings.shopPhone}\n`;
-      out += doubleDivider;
-
-      out += ALIGN_LEFT;
-      out += padRow(`Bill: ${bill.billNumber}`, `${bill.date}`);
-      out += `Customer: ${bill.customerName}\n`;
-      if (bill.customerPhone) out += `Phone: ${bill.customerPhone}\n`;
-      out += `Pay Mode: ${bill.paymentMode}\n`;
-      out += divider;
-
-      // Header
-      out += BOLD_ON + padRow('Item', 'Qty x Rate = Amt') + BOLD_OFF;
-      out += divider;
-
-      bill.items.forEach(item => {
-        out += `${item.name}\n`;
-        const rightSide = `${item.qty} x ${item.rate.toFixed(2)} = ${cur}${item.total.toFixed(2)}`;
-        out += padRow('', rightSide);
-      });
-
-      out += divider;
-      out += padRow('Subtotal:', `${cur}${bill.subtotal.toFixed(2)}`);
-      if (bill.taxPct > 0) {
-        out += padRow(`Tax (${bill.taxPct}%):`, `${cur}${bill.taxAmount.toFixed(2)}`);
-      }
-      if (bill.discount > 0) {
-        out += padRow('Discount:', `-${cur}${bill.discount.toFixed(2)}`);
-      }
-      out += doubleDivider;
-      out += BOLD_ON + DOUBLE_HEIGHT;
-      out += padRow('TOTAL:', `${cur}${bill.grandTotal.toFixed(2)}`);
-      out += NORMAL_SIZE + BOLD_OFF;
-      out += doubleDivider;
-
-      out += ALIGN_CENTER;
-      out += `${settings.footerNote}\n\n\n\n`;
-
-      return new TextEncoder().encode(out);
-    }
-
-    async function writeBytesToPrinter(bytes) {
-      if (!btCharacteristic) {
-        const ok = await connectBluetoothPrinter();
-        if (!ok || !btCharacteristic) return false;
-      }
-
-      const chunkSize = 100;
-      for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.slice(i, i + chunkSize);
-        if (btCharacteristic.properties.writeWithoutResponse) {
-          await btCharacteristic.writeValueWithoutResponse(chunk);
-        } else {
-          await btCharacteristic.writeValue(chunk);
-        }
-        await new Promise(r => setTimeout(r, 25));
-      }
-      return true;
-    }
-
-    async function printBillOverBluetooth(bill) {
-      try {
-        const payload = buildEscPosPayload(bill);
-        const sent = await writeBytesToPrinter(payload);
-        if (sent) showToast(`Printed ${bill.billNumber} via Bluetooth!`);
-      } catch (err) {
-        console.error(err);
-        showToast(`Print failed: ${err.message}`, true);
-      }
-    }
-
-    async function testBluetoothPrint() {
-      const sampleBill = {
-        billNumber: 'TEST-001',
-        date: getTodayDateString(),
-        customerName: 'Test Customer',
-        customerPhone: '9999999999',
-        paymentMode: 'Cash',
-        items: [{ name: 'Sample Item', qty: 1, rate: 100, total: 100 }],
-        subtotal: 100,
-        taxPct: 0,
-        taxAmount: 0,
-        discount: 0,
-        grandTotal: 100
-      };
-      await printBillOverBluetooth(sampleBill);
-    }
-
-    // ==================== RECEIPT MODAL & SHARING ====================
-    function openReceiptModal(bill) {
-      activeModalBill = bill;
-      const cur = settings.currency;
-      const area = document.getElementById('printable-receipt-area');
-
-      const itemsHtml = bill.items.map(it => `
-        <div class="py-1 border-b border-dashed border-slate-300">
-          <div class="font-semibold">${escapeHtml(it.name)}</div>
-          <div class="flex justify-between text-[10px] text-slate-700">
-            <span>${it.qty} x ${cur}${it.rate.toFixed(2)}</span>
-            <span class="font-bold">${cur}${it.total.toFixed(2)}</span>
-          </div>
-        </div>
+          </td>
+        </tr>
       `).join('');
 
-      area.innerHTML = `
-        <div class="text-center border-b-2 border-black pb-2 mb-2">
-          <div class="font-bold text-sm uppercase">${escapeHtml(settings.shopName)}</div>
-          ${settings.shopAddress ? `<div class="text-[10px]">${escapeHtml(settings.shopAddress)}</div>` : ''}
-          ${settings.shopPhone ? `<div class="text-[10px]">Ph: ${escapeHtml(settings.shopPhone)}</div>` : ''}
-        </div>
+      container.innerHTML = `
+        <div class="cert-wrapper">
+          <div class="cert-inner">
+            <!-- Header Section -->
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #1d5ba6; padding-bottom: 6px; margin-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  ${shopSettings.logo ? `<img src="${shopSettings.logo}" alt="Logo" style="width: 48px; height: 48px; object-fit: contain;" />` : ''}
+                  <div>
+                    <div class="cert-title">${escapeHtml(shopSettings.name || 'TESTING CENTER')}</div>
+                    ${shopSettings.tagline ? `<div style="font-size: 11px; font-weight: 700; color: #1d5ba6; margin-top: 2px;">${escapeHtml(shopSettings.tagline)}</div>` : ''}
+                    ${shopSettings.address ? `<div style="font-size: 10px; color: #334155; margin-top: 1px;">${escapeHtml(shopSettings.address)}</div>` : ''}
+                  </div>
+                </div>
+                <div style="text-align: right; font-size: 11px; font-weight: 700;">
+                  ${shopSettings.phone ? `<div>Ph: ${escapeHtml(shopSettings.phone)}</div>` : ''}
+                  <div style="margin-top: 4px;">
+                    <span class="cert-banner">TESTING REPORT</span>
+                  </div>
+                </div>
+              </div>
 
-        <div class="text-[10px] space-y-0.5 border-b border-black pb-2 mb-2">
-          <div class="flex justify-between"><span>Bill No: <strong>${escapeHtml(bill.billNumber)}</strong></span><span>${escapeHtml(bill.date)}</span></div>
-          <div>Customer: <strong>${escapeHtml(bill.customerName)}</strong></div>
-          ${bill.customerPhone ? `<div>Phone: ${escapeHtml(bill.customerPhone)}</div>` : ''}
-          <div>Payment: ${escapeHtml(bill.paymentMode)}</div>
-        </div>
+              <!-- Customer & Serial Meta Row -->
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; margin-bottom: 6px; background: #f8fafc; padding: 4px 8px; border: 1px solid #cbd5e1;">
+                <div>S. No.: <span style="color: #c8232c;">${escapeHtml(record.billNumber)}</span></div>
+                <div>Customer: <span style="color: #0f172a;">${escapeHtml(record.customerName)}</span> ${record.customerPhone ? `(${escapeHtml(record.customerPhone)})` : ''}</div>
+                <div>Date: <span style="color: #0f172a;">${formattedDate}</span></div>
+              </div>
 
-        <div class="mb-2">
-          ${itemsHtml}
-        </div>
+              <!-- Testing Items Table -->
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1.5px solid #1d5ba6;">
+                <thead>
+                  <tr style="background: #1d5ba6; color: #ffffff; font-size: 11px; text-transform: uppercase;">
+                    <th style="padding: 4px 6px; width: 7%;">#</th>
+                    <th style="padding: 4px 6px; text-align: left; width: 31%;">Item Name</th>
+                    <th style="padding: 4px 6px; text-align: right; width: 15%;">Weight</th>
+                    <th style="padding: 4px 6px; text-align: right; width: 15%;">Touch</th>
+                    <th style="padding: 4px 6px; text-align: right; width: 16%;">Pure</th>
+                    <th style="padding: 4px 6px; text-align: center; width: 16%;">Image</th>
+                  </tr>
+                </thead>
+                <tbody style="color: #0f172a;">
+                  ${itemRowsHtml}
+                </tbody>
+                <tfoot>
+                  <tr style="background: #eff6ff; border-top: 1.5px solid #1d5ba6; font-weight: 800; color: #1d5ba6;">
+                    <td colspan="2" style="padding: 5px 6px; text-align: right;">TOTAL (${record.items.length} Items):</td>
+                    <td style="padding: 5px 6px; text-align: right;">${record.totalWeight} g</td>
+                    <td style="padding: 5px 6px; text-align: right;">—</td>
+                    <td style="padding: 5px 6px; text-align: right; color: #c8232c;">${record.totalPure} g</td>
+                    <td style="padding: 5px 6px; text-align: center;">${itemImages.length > 0 ? `${itemImages.length} Photo(s)` : '—'}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
 
-        <div class="space-y-0.5 text-[10px] pt-1">
-          <div class="flex justify-between"><span>Subtotal:</span><span>${cur}${bill.subtotal.toFixed(2)}</span></div>
-          ${bill.taxPct > 0 ? `<div class="flex justify-between"><span>Tax (${bill.taxPct}%):</span><span>${cur}${bill.taxAmount.toFixed(2)}</span></div>` : ''}
-          ${bill.discount > 0 ? `<div class="flex justify-between"><span>Discount:</span><span>-${cur}${bill.discount.toFixed(2)}</span></div>` : ''}
-          <div class="flex justify-between font-bold text-xs border-t-2 border-b-2 border-black py-1 mt-1">
-            <span>GRAND TOTAL</span>
-            <span>${cur}${bill.grandTotal.toFixed(2)}</span>
+            <!-- Footer Signature Section -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; padding-top: 6px; border-top: 1px dashed #94a3b8; font-size: 11px;">
+              <div style="color: #475569; max-width: 65%;">
+                * Result is based on sample tested at the time of inspection.
+              </div>
+              <div style="text-align: center; min-width: 140px;">
+                <div style="height: 22px;"></div>
+                <div style="border-top: 1px solid #1d5ba6; padding-top: 2px; font-weight: 700; color: #1d5ba6;">
+                  ${escapeHtml(shopSettings.footer || 'Authorized Signatory')}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="text-center text-[10px] mt-3 pt-1">
-          ${escapeHtml(settings.footerNote)}
-        </div>
       `;
+    }
 
-      const modal = document.getElementById('receipt-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+    function openPrintModal() {
+      document.getElementById('print-modal').classList.remove('hidden');
       lucide.createIcons();
     }
 
-    function closeReceiptModal() {
-      const modal = document.getElementById('receipt-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+    function closePrintModal() {
+      document.getElementById('print-modal').classList.add('hidden');
     }
 
-    async function printModalViaBluetooth() {
-      if (!activeModalBill) return;
-      await printBillOverBluetooth(activeModalBill);
-    }
-
-    async function shareReceiptText() {
-      if (!activeModalBill) return;
-      const b = activeModalBill;
-      const cur = settings.currency;
-      const lines = [
-        `*${settings.shopName}*`,
-        `Bill: ${b.billNumber} | Date: ${b.date}`,
-        `Customer: ${b.customerName}`,
-        `------------------------`,
-        ...b.items.map(i => `${i.name} (${i.qty} x ${cur}${i.rate}) = ${cur}${i.total.toFixed(2)}`),
-        `------------------------`,
-        `*Grand Total: ${cur}${b.grandTotal.toFixed(2)}* (${b.paymentMode})`,
-        settings.footerNote
-      ].join('\n');
-
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: `Bill ${b.billNumber}`, text: lines });
-        } catch (e) {}
-      } else {
-        await navigator.clipboard.writeText(lines);
-        showToast('Receipt copied to clipboard!');
-      }
-    }
-
-    // ==================== HISTORY, SEARCH & EXCEL EXPORT ====================
-    function getFilteredBills() {
-      const query = document.getElementById('search-query').value.trim().toLowerCase();
+    // ==================== HISTORY & LEDGER ====================
+    function getFilteredRecords() {
+      const q = document.getElementById('search-query').value.trim().toLowerCase();
       const dateFilter = document.getElementById('search-date').value;
 
-      return bills.filter(b => {
-        const matchesDate = !dateFilter || b.date === dateFilter;
-        const matchesQuery = !query ||
-          b.customerName.toLowerCase().includes(query) ||
-          b.billNumber.toLowerCase().includes(query) ||
-          (b.customerPhone && b.customerPhone.toLowerCase().includes(query));
+      return records.filter((r) => {
+        const matchesDate = !dateFilter || r.billDate === dateFilter;
+        const matchesQuery =
+          !q ||
+          String(r.customerName).toLowerCase().includes(q) ||
+          String(r.billNumber).toLowerCase().includes(q) ||
+          String(r.customerPhone || '').toLowerCase().includes(q) ||
+          r.items.some((it) => it.name.toLowerCase().includes(q));
         return matchesDate && matchesQuery;
       });
     }
@@ -1035,152 +1037,127 @@ input[type="number"] {
     }
 
     function renderHistoryList() {
-      const filtered = getFilteredBills();
-      const totalRev = bills.reduce((sum, b) => sum + b.grandTotal, 0);
-      const cur = settings.currency;
+      const listEl = document.getElementById('history-list');
+      const filtered = getFilteredRecords();
 
-      document.getElementById('ledger-total-revenue').textContent = `${cur}${totalRev.toFixed(2)}`;
-      document.getElementById('ledger-total-count').textContent = `${bills.length} invoice${bills.length === 1 ? '' : 's'} recorded`;
+      const totalWeight = records.reduce((s, r) => s + parseFloat(r.totalWeight || 0), 0);
+      const totalPure = records.reduce((s, r) => s + parseFloat(r.totalPure || 0), 0);
 
-      const container = document.getElementById('history-list');
+      document.getElementById('ledger-total-count').textContent = `${records.length} Records`;
+      document.getElementById('ledger-total-weights').textContent = `Total Weight: ${totalWeight.toFixed(3)} g | Pure: ${totalPure.toFixed(3)} g`;
+
       if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white rounded-2xl p-8 text-center border border-slate-200/80">
-            <p class="text-sm font-bold text-slate-600">No matching bills found</p>
-            <p class="text-xs text-slate-400 mt-1">Create a new bill or clear your search filters.</p>
+        listEl.innerHTML = `
+          <div class="bg-white rounded-2xl p-8 text-center border border-slate-200/80 text-slate-400">
+            <i data-lucide="folder-open" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <p class="text-sm font-semibold">No testing records found</p>
           </div>
         `;
+        lucide.createIcons();
         return;
       }
 
-      container.innerHTML = filtered.map(b => `
-        <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 flex items-center justify-between gap-3">
-          <div class="min-w-0 flex-1" onclick='openReceiptModalById("${b.id}")'>
-            <div class="flex items-center gap-2">
-              <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">${escapeHtml(b.billNumber)}</span>
-              <span class="text-[11px] font-medium text-slate-400">${escapeHtml(b.date)}</span>
-              <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">${escapeHtml(b.paymentMode)}</span>
+      listEl.innerHTML = filtered.map((rec) => {
+        const firstImgItem = rec.items.find((it) => it.image);
+        return `
+          <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200/80 space-y-2.5">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                ${firstImgItem
+                  ? `<img src="${firstImgItem.image}" onclick="openImageZoom('${firstImgItem.image}', '${escapeHtml(rec.customerName)} - #${escapeHtml(rec.billNumber)}')" class="w-11 h-11 rounded-xl object-cover border border-slate-200 cursor-pointer shrink-0" />`
+                  : `<div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 shrink-0"><i data-lucide="award" class="w-5 h-5"></i></div>`
+                }
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">#${escapeHtml(rec.billNumber)}</span>
+                    <h3 class="font-bold text-sm text-slate-800">${escapeHtml(rec.customerName)}</h3>
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-0.5">${formatDisplayDate(rec.billDate)} • ${rec.items.length} item(s)</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-bold text-slate-700">Wt: ${rec.totalWeight} g</p>
+                <p class="text-xs font-extrabold text-emerald-600">Pure: ${rec.totalPure} g</p>
+              </div>
             </div>
-            <h3 class="font-bold text-sm text-slate-800 truncate mt-1">${escapeHtml(b.customerName)}</h3>
-            <p class="text-[11px] text-slate-400 truncate">
-              ${b.items.length} item${b.items.length === 1 ? '' : 's'}${b.customerPhone ? ` • ${escapeHtml(b.customerPhone)}` : ''}
-            </p>
-          </div>
 
-          <div class="text-right shrink-0 flex flex-col items-end gap-1.5">
-            <span class="font-extrabold text-sm text-emerald-600">${cur}${b.grandTotal.toFixed(2)}</span>
-            <div class="flex items-center gap-1">
-              <button onclick='openReceiptModalById("${b.id}")' title="View & Print" class="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
-                <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button onclick="reprintRecord('${rec.id}')" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1">
+                <i data-lucide="printer" class="w-3.5 h-3.5 text-emerald-400"></i> Print Half-A4
               </button>
-              <button onclick='deleteBillById("${b.id}")' title="Delete Bill" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <button onclick="deleteRecord('${rec.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold">
+                Delete
               </button>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
       lucide.createIcons();
     }
 
-    function openReceiptModalById(id) {
-      const bill = bills.find(b => b.id === id);
-      if (bill) openReceiptModal(bill);
+    function reprintRecord(id) {
+      const rec = records.find((r) => r.id === id);
+      if (!rec) return;
+      renderHalfA4Certificate(rec);
+      openPrintModal();
     }
 
-    function deleteBillById(id) {
-      if (!confirm('Delete this bill from history?')) return;
-      bills = bills.filter(b => b.id !== id);
-      persistBills();
+    function deleteRecord(id) {
+      if (!confirm('Delete this testing record?')) return;
+      records = records.filter((r) => r.id !== id);
+      persistRecords();
       renderHistoryList();
-      showToast('Bill deleted');
+      showToast('Record deleted');
     }
 
-    function clearAllHistory() {
-      if (!confirm('Are you sure you want to delete ALL saved bills? Export to Excel first if needed.')) return;
-      bills = [];
-      persistBills();
-      renderHistoryList();
-      showToast('All bills cleared');
+    // ==================== EXCEL EXPORT ====================
+    function exportAllToExcel() {
+      exportRecordsToXlsx(records, 'Testing_Ledger_All');
     }
 
-    function downloadExcelWorkbook(billList, filenamePrefix) {
-      if (!billList || billList.length === 0) {
-        showToast('No bills available to export', true);
+    function exportFilteredToExcel() {
+      const filtered = getFilteredRecords();
+      exportRecordsToXlsx(filtered, 'Testing_Ledger_Filtered');
+    }
+
+    function exportRecordsToXlsx(list, filePrefix) {
+      if (!list || list.length === 0) {
+        showToast('No records to export', 'error');
         return;
       }
 
-      // Sheet 1: Bills Summary
-      const summaryRows = billList.map(b => ({
-        'Bill Number': b.billNumber,
-        'Date': b.date,
-        'Time': b.time || '',
-        'Customer Name': b.customerName,
-        'Phone': b.customerPhone || '',
-        'Payment Mode': b.paymentMode,
-        'Items Count': b.items.length,
-        'Subtotal': b.subtotal,
-        'Tax (%)': b.taxPct,
-        'Tax Amount': b.taxAmount,
-        'Discount': b.discount,
-        'Grand Total': b.grandTotal
-      }));
-
-      // Sheet 2: Itemized Details
-      const itemRows = [];
-      billList.forEach(b => {
-        b.items.forEach(it => {
-          itemRows.push({
-            'Bill Number': b.billNumber,
-            'Date': b.date,
-            'Customer Name': b.customerName,
-            'Item Name': it.name,
-            'Quantity': it.qty,
-            'Rate': it.rate,
-            'Line Total': it.total
+      const rows = [];
+      list.forEach((rec) => {
+        rec.items.forEach((item, idx) => {
+          rows.push({
+            'S No.': rec.billNumber,
+            'Date': rec.billDate,
+            'Customer Name': rec.customerName,
+            'Phone': rec.customerPhone || '',
+            'Item #': idx + 1,
+            'Item Name': item.name,
+            'Weight (g)': parseFloat(item.weight),
+            'Touch (%)': parseFloat(item.touch),
+            'Pure (g)': parseFloat(item.pure),
+            'Has Image': item.image ? 'Yes' : 'No'
           });
         });
       });
 
-      const wb = XLSX.utils.book_new();
-      const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
-      const wsItems = XLSX.utils.json_to_sheet(itemRows);
-
-      XLSX.utils.book_append_sheet(wb, wsSummary, 'Bills Summary');
-      XLSX.utils.book_append_sheet(wb, wsItems, 'Itemized Details');
-
-      const fileName = `${filenamePrefix}_${getTodayDateString()}.xlsx`;
-      XLSX.writeFile(wb, fileName);
-      showToast(`Exported ${fileName}`);
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Testing Ledger');
+      const dateStr = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(workbook, `${filePrefix}_${dateStr}.xlsx`);
+      showToast('Excel file downloaded!');
     }
 
-    function exportAllToExcel() {
-      downloadExcelWorkbook(bills, 'QuickBill_All_Sales');
-    }
-
-    function exportFilteredToExcel() {
-      downloadExcelWorkbook(getFilteredBills(), 'QuickBill_Filtered_Sales');
-    }
-
-    // ==================== UTILITIES ====================
-    function showToast(message, isError = false) {
-      const toast = document.getElementById('toast');
-      const icon = document.getElementById('toast-icon');
-      const msg = document.getElementById('toast-msg');
-
-      msg.textContent = message;
-      icon.setAttribute('data-lucide', isError ? 'alert-circle' : 'check-circle-2');
-      icon.className = `w-4 h-4 shrink-0 ${isError ? 'text-rose-400' : 'text-emerald-400'}`;
-      lucide.createIcons();
-
-      toast.classList.remove('hidden');
-      toast.classList.add('flex');
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => {
-        toast.classList.add('hidden');
-        toast.classList.remove('flex');
-      }, 3200);
+    // ==================== HELPERS ====================
+    function formatDisplayDate(isoDate) {
+      if (!isoDate) return '';
+      const [y, m, d] = isoDate.split('-');
+      return `${d}/${m}/${y}`;
     }
 
     function escapeHtml(str) {
@@ -1190,32 +1167,26 @@ input[type="number"] {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
     }
-    // 1. Convert uploaded image to Base64 and save to localStorage
-document.getElementById('shop-logo-input').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    localStorage.setItem('quickbill_shop_logo', event.target.result);
-    updateReceiptLogo();
-  };
-  reader.readAsDataURL(file);
-});
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-msg');
+      const iconEl = document.getElementById('toast-icon');
 
-// 2. Load saved logo into the receipt preview
-function updateReceiptLogo() {
-  const savedLogo = localStorage.getItem('quickbill_shop_logo');
-  const logoImg = document.getElementById('receipt-logo-preview');
-  
-  if (savedLogo && logoImg) {
-    logoImg.src = savedLogo;
-    logoImg.classList.remove('hidden');
-  }
-}
+      msgEl.textContent = message;
+      iconEl.setAttribute('data-lucide', type === 'error' ? 'alert-circle' : 'check-circle-2');
+      iconEl.className = `w-4 h-4 shrink-0 ${type === 'error' ? 'text-rose-400' : 'text-emerald-400'}`;
 
-// Run when page loads so existing logo stays visible
-window.addEventListener('DOMContentLoaded', updateReceiptLogo);
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      lucide.createIcons();
+
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 2600);
+    }
   </script>
 </body>
 </html>
