@@ -476,9 +476,9 @@
       const maxFromRecords = records.reduce((max, r) => {
         const num = parseInt(String(r.billNumber || '').replace(/\D/g, ''), 10);
         return !isNaN(num) && num > max ? num : max;
-      }, 100);
+      }, 0);
 
-      const candidate = Math.max(maxFromRecords + 1, storedNext || 01);
+      const candidate = Math.max(maxFromRecords + 1, storedNext || 1);
       return String(candidate);
     }
 
