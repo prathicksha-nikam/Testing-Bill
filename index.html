@@ -58,7 +58,7 @@
 
     .cert-inner {
       border: 1.5px solid #1d5ba6;
-      padding: 12px 16px;
+      padding: 10px 14px;
       position: relative;
       display: flex;
       flex-direction: column;
@@ -68,7 +68,7 @@
 
     .cert-title {
       font-family: Georgia, serif;
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
       color: #c8232c;
       letter-spacing: 0.5px;
@@ -80,14 +80,14 @@
       color: #fff;
       font-family: Arial, sans-serif;
       font-weight: 800;
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 1.5px;
-      padding: 4px 18px;
+      padding: 3px 14px;
       display: inline-block;
       clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
     }
 
-    /* Half of an A4 Sheet (A5 Landscape: 210mm x 148mm) */
+    /* Half of an A4 Sheet (Top Half: 210mm x 148.5mm) */
     @media print {
       @page {
         size: A4 portrait;
@@ -108,14 +108,14 @@
         left: 0;
         top: 0;
         width: 210mm !important;
-        height: 148.5mm !important; /* Exact top half of A4 sheet */
+        height: 148.5mm !important;
         max-width: none !important;
         margin: 0 !important;
         padding: 7mm 8mm !important;
         background: #ffffff !important;
         box-shadow: none !important;
         border: none !important;
-        border-bottom: 1px dashed #94a3b8 !important; /* Cut guide on A4 */
+        border-bottom: 1px dashed #94a3b8 !important;
         box-sizing: border-box !important;
         overflow: hidden;
       }
@@ -174,8 +174,13 @@
 
         <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-500 mb-1">S No.</label>
-            <input id="bill-number" type="text" class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold text-slate-800 focus:outline-none focus:border-emerald-500 focus:bg-white" />
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-[11px] font-semibold text-slate-500">S No. (Auto)</label>
+              <button type="button" onclick="syncAutoSerialNumber()" title="Refresh Next S No." class="text-[10px] font-bold text-emerald-600 hover:underline">
+                Auto-Sync
+              </button>
+            </div>
+            <input id="bill-number" type="text" readonly class="w-full px-3 py-2 rounded-xl bg-emerald-50/60 border border-emerald-200 text-sm font-extrabold text-emerald-900 focus:outline-none cursor-default" />
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-slate-500 mb-1">Date</label>
@@ -218,7 +223,7 @@
         <!-- Dynamic Item Rows -->
         <div id="items-container" class="space-y-2"></div>
 
-        <!-- Summary Box (No Tax / No Discount) -->
+        <!-- Summary Box -->
         <div class="bg-slate-900 text-white rounded-xl p-3.5">
           <div class="grid grid-cols-3 gap-2 text-center">
             <div class="bg-slate-800/80 rounded-lg p-2">
@@ -436,6 +441,7 @@
     // ==================== STORAGE KEYS ====================
     const STORAGE_KEY_RECORDS = 'testing_form_records_v2';
     const STORAGE_KEY_SHOP = 'testing_form_shop_details_v2';
+    const STORAGE_KEY_SERIAL = 'testing_form_next_serial_v1';
 
     // ==================== STATE ====================
     let records = [];
@@ -454,23 +460,40 @@
       loadShopSettings();
       loadRecords();
       setDefaultFormMeta();
-      addItemRow(); // Start with 1 clean row
+      addItemRow();
       lucide.createIcons();
     });
 
     function setDefaultFormMeta() {
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('bill-date').value = today;
-      document.getElementById('bill-number').value = getNextSerialNumber();
+      syncAutoSerialNumber();
     }
 
+    // Automatically computes and updates S. No. from saved records + stored counter
     function getNextSerialNumber() {
-      if (records.length === 0) return '101';
-      const maxNo = records.reduce((max, r) => {
-        const num = parseInt(String(r.billNumber).replace(/\D/g, ''), 10);
+      const storedNext = parseInt(localStorage.getItem(STORAGE_KEY_SERIAL) || '0', 10);
+      const maxFromRecords = records.reduce((max, r) => {
+        const num = parseInt(String(r.billNumber || '').replace(/\D/g, ''), 10);
         return !isNaN(num) && num > max ? num : max;
       }, 100);
-      return String(maxNo + 1);
+
+      const candidate = Math.max(maxFromRecords + 1, storedNext || 101);
+      return String(candidate);
+    }
+
+    function syncAutoSerialNumber() {
+      const nextSerial = getNextSerialNumber();
+      localStorage.setItem(STORAGE_KEY_SERIAL, nextSerial);
+      document.getElementById('bill-number').value = nextSerial;
+    }
+
+    function advanceSerialNumberAfterSave(usedSerial) {
+      const usedNum = parseInt(String(usedSerial || '').replace(/\D/g, ''), 10);
+      const currentNext = parseInt(getNextSerialNumber(), 10);
+      const nextNum = !isNaN(usedNum) ? Math.max(usedNum + 1, currentNext) : currentNext + 1;
+      localStorage.setItem(STORAGE_KEY_SERIAL, String(nextNum));
+      document.getElementById('bill-number').value = String(nextNum);
     }
 
     // ==================== SHOP SETTINGS (SAVE ONCE, PERSIST FOREVER) ====================
@@ -561,12 +584,14 @@
         }
       });
 
-      if (tabName === 'history') {
+      if (tabName === 'new-bill') {
+        syncAutoSerialNumber();
+      } else if (tabName === 'history') {
         renderHistoryList();
       }
     }
 
-    // ==================== DYNAMIC ITEM ROWS (ITEM NAME, WEIGHT, TOUCH, PURE + ADD IMAGE BUTTON) ====================
+    // ==================== DYNAMIC ITEM ROWS ====================
     function addItemRow(prefill = {}) {
       rowCounter++;
       const rowId = `item-row-${rowCounter}`;
@@ -579,35 +604,30 @@
 
       rowEl.innerHTML = `
         <div class="grid grid-cols-12 gap-1.5 items-center">
-          <!-- Item Name (4 cols) -->
           <div class="col-span-4">
             <input type="text" placeholder="Item name" value="${escapeHtml(prefill.name || '')}"
               oninput="recalculateTotals()"
               class="item-name w-full px-2 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-800 focus:outline-none focus:border-emerald-500" />
           </div>
 
-          <!-- Weight (2 cols) -->
           <div class="col-span-2">
             <input type="number" step="0.001" min="0" placeholder="0.000" value="${prefill.weight || ''}"
               oninput="calculateRowPure('${rowId}')"
               class="item-weight w-full px-1.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-center text-slate-800 focus:outline-none focus:border-emerald-500" />
           </div>
 
-          <!-- Touch % (2 cols) -->
           <div class="col-span-2">
             <input type="number" step="0.01" min="0" max="100" placeholder="0.00" value="${prefill.touch || ''}"
               oninput="calculateRowPure('${rowId}')"
               class="item-touch w-full px-1.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-center text-slate-800 focus:outline-none focus:border-emerald-500" />
           </div>
 
-          <!-- Pure Weight (2 cols) -->
           <div class="col-span-2">
             <input type="number" step="0.001" min="0" placeholder="0.000" value="${prefill.pure || ''}"
               oninput="recalculateTotals()"
               class="item-pure w-full px-1.5 py-1.5 rounded-lg bg-emerald-50/70 border border-emerald-200 text-xs font-bold text-center text-emerald-800 focus:outline-none focus:border-emerald-500" />
           </div>
 
-          <!-- Add Image Button & Delete Row (2 cols) -->
           <div class="col-span-2 flex items-center justify-center gap-1">
             <label title="Add Item Image" class="cursor-pointer flex-1 h-8 rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 flex items-center justify-center gap-1 px-1.5 text-[10px] font-bold transition active:scale-95">
               <i data-lucide="camera" class="w-3.5 h-3.5 shrink-0"></i>
@@ -620,7 +640,6 @@
           </div>
         </div>
 
-        <!-- Attached Image Preview Strip (Shown when image is uploaded) -->
         <div class="row-image-preview ${prefill.image ? 'flex' : 'hidden'} items-center justify-between bg-white border border-slate-200 rounded-lg px-2 py-1.5">
           <div class="flex items-center gap-2">
             <img src="${prefill.image || ''}" alt="Item" onclick="openRowImageZoom('${rowId}')" class="row-thumb w-10 h-10 rounded-md object-cover border border-slate-200 cursor-pointer" />
@@ -643,7 +662,6 @@
     function removeItemRow(rowId) {
       const container = document.getElementById('items-container');
       if (container.children.length <= 1) {
-        // Reset the single row instead of leaving empty container
         const row = document.getElementById(rowId);
         row.querySelector('.item-name').value = '';
         row.querySelector('.item-weight').value = '';
@@ -702,7 +720,7 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      compressImageFile(file, 450, 0.8, (compressedBase64) => {
+      compressImageFile(file, 650, 0.85, (compressedBase64) => {
         const row = document.getElementById(rowId);
         if (!row) return;
 
@@ -719,7 +737,6 @@
         showToast('Item image attached!');
       });
 
-      // Reset input so selecting the same photo again works
       event.target.value = '';
     }
 
@@ -874,6 +891,7 @@
 
       records.unshift(record);
       persistRecords();
+      advanceSerialNumberAfterSave(record.billNumber);
       showToast(`Record #${record.billNumber} saved!`);
       resetCurrentForm(false);
     }
@@ -884,6 +902,7 @@
 
       records.unshift(record);
       persistRecords();
+      advanceSerialNumberAfterSave(record.billNumber);
       showToast(`Record #${record.billNumber} saved!`);
       renderHalfA4Certificate(record);
       openPrintModal();
@@ -903,17 +922,46 @@
       document.getElementById('items-container').innerHTML = '';
       rowCounter = 0;
       addItemRow();
-      setDefaultFormMeta();
+      document.getElementById('bill-date').value = new Date().toISOString().split('T')[0];
+      syncAutoSerialNumber();
       if (showNotification) showToast('Form cleared');
     }
 
-    // ==================== HALF-A4 CERTIFICATE RENDERING ====================
+    // ==================== HALF-A4 CERTIFICATE (LARGE LEFT IMAGE + RIGHT PRODUCT DETAILS) ====================
     function renderHalfA4Certificate(record) {
       const container = document.getElementById('printable-receipt-area');
       const formattedDate = formatDisplayDate(record.billDate);
 
-      // Collect item images if available
-      const itemImages = record.items.filter((it) => it.image);
+      // Collect item photos for the large left-side showcase
+      const attachedPhotos = record.items
+        .map((it, idx) => ({ ...it, index: idx + 1 }))
+        .filter((it) => it.image);
+
+      const leftPhotoPanelHtml = attachedPhotos.length > 0
+        ? `
+          <div style="display: flex; flex-direction: column; gap: 6px; height: 100%; justify-content: space-between;">
+            <div style="display: flex; flex-direction: column; gap: 6px; flex: 1; justify-content: center;">
+              ${attachedPhotos.slice(0, 2).map((p) => `
+                <div style="border: 1.5px solid #1d5ba6; border-radius: 4px; padding: 3px; background: #f8fafc; text-align: center; flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden;">
+                  <img src="${p.image}" alt="${escapeHtml(p.name)}" style="width: 100%; height: ${attachedPhotos.length === 1 ? '86mm' : '40mm'}; object-fit: contain; border-radius: 2px; display: block; margin: 0 auto;" />
+                  <div style="font-size: 10px; font-weight: 800; color: #1d5ba6; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    #${p.index} ${escapeHtml(p.name)}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            ${attachedPhotos.length > 2
+              ? `<div style="font-size: 9px; font-weight: 700; text-align: center; color: #475569;">+${attachedPhotos.length - 2} more photo(s) in record</div>`
+              : ''
+            }
+          </div>
+        `
+        : `
+          <div style="height: 100%; min-height: 82mm; border: 1.5px dashed #94a3b8; border-radius: 4px; background: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; text-align: center; padding: 8px;">
+            <div style="font-size: 11px; font-weight: 700;">No Item Photo</div>
+            <div style="font-size: 9px; margin-top: 2px;">Add an image on any item row to display it here</div>
+          </div>
+        `;
 
       const itemRowsHtml = record.items.map((item, idx) => `
         <tr style="border-bottom: 1px solid #cbd5e1;">
@@ -921,81 +969,82 @@
           <td style="padding: 4px 6px; text-align: left; font-weight: 700;">${escapeHtml(item.name)}</td>
           <td style="padding: 4px 6px; text-align: right; font-weight: 700;">${item.weight} g</td>
           <td style="padding: 4px 6px; text-align: right; font-weight: 700; color: #c8232c;">${item.touch} %</td>
-          <td style="padding: 4px 6px; text-align: right; font-weight: 700;">${item.pure} g</td>
-          <td style="padding: 3px 6px; text-align: center;">
-            ${item.image
-              ? `<img src="${item.image}" alt="Item" style="width: 34px; height: 34px; object-fit: cover; border: 1px solid #1d5ba6; border-radius: 3px; display: inline-block;" />`
-              : `<span style="font-size: 10px; color: #94a3b8;">—</span>`
-            }
-          </td>
+          <td style="padding: 4px 6px; text-align: right; font-weight: 800; color: #0f172a;">${item.pure} g</td>
         </tr>
       `).join('');
 
       container.innerHTML = `
         <div class="cert-wrapper">
           <div class="cert-inner">
-            <!-- Header Section -->
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #1d5ba6; padding-bottom: 6px; margin-bottom: 6px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  ${shopSettings.logo ? `<img src="${shopSettings.logo}" alt="Logo" style="width: 48px; height: 48px; object-fit: contain;" />` : ''}
-                  <div>
-                    <div class="cert-title">${escapeHtml(shopSettings.name || 'TESTING CENTER')}</div>
-                    ${shopSettings.tagline ? `<div style="font-size: 11px; font-weight: 700; color: #1d5ba6; margin-top: 2px;">${escapeHtml(shopSettings.tagline)}</div>` : ''}
-                    ${shopSettings.address ? `<div style="font-size: 10px; color: #334155; margin-top: 1px;">${escapeHtml(shopSettings.address)}</div>` : ''}
-                  </div>
-                </div>
-                <div style="text-align: right; font-size: 11px; font-weight: 700;">
-                  ${shopSettings.phone ? `<div>Ph: ${escapeHtml(shopSettings.phone)}</div>` : ''}
-                  <div style="margin-top: 4px;">
-                    <span class="cert-banner">TESTING REPORT</span>
-                  </div>
+            <!-- Top Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid #1d5ba6; padding-bottom: 5px; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                ${shopSettings.logo ? `<img src="${shopSettings.logo}" alt="Logo" style="width: 44px; height: 44px; object-fit: contain;" />` : ''}
+                <div>
+                  <div class="cert-title">${escapeHtml(shopSettings.name || 'TESTING CENTER')}</div>
+                  ${shopSettings.tagline ? `<div style="font-size: 10.5px; font-weight: 700; color: #1d5ba6; margin-top: 1px;">${escapeHtml(shopSettings.tagline)}</div>` : ''}
+                  ${shopSettings.address ? `<div style="font-size: 9.5px; color: #334155;">${escapeHtml(shopSettings.address)}</div>` : ''}
                 </div>
               </div>
-
-              <!-- Customer & Serial Meta Row -->
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; margin-bottom: 6px; background: #f8fafc; padding: 4px 8px; border: 1px solid #cbd5e1;">
-                <div>S. No.: <span style="color: #c8232c;">${escapeHtml(record.billNumber)}</span></div>
-                <div>Customer: <span style="color: #0f172a;">${escapeHtml(record.customerName)}</span> ${record.customerPhone ? `(${escapeHtml(record.customerPhone)})` : ''}</div>
-                <div>Date: <span style="color: #0f172a;">${formattedDate}</span></div>
+              <div style="text-align: right; font-size: 10.5px; font-weight: 700;">
+                ${shopSettings.phone ? `<div>Ph: ${escapeHtml(shopSettings.phone)}</div>` : ''}
+                <div style="margin-top: 3px;">
+                  <span class="cert-banner">TESTING REPORT</span>
+                </div>
               </div>
-
-              <!-- Testing Items Table -->
-              <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1.5px solid #1d5ba6;">
-                <thead>
-                  <tr style="background: #1d5ba6; color: #ffffff; font-size: 11px; text-transform: uppercase;">
-                    <th style="padding: 4px 6px; width: 7%;">#</th>
-                    <th style="padding: 4px 6px; text-align: left; width: 31%;">Item Name</th>
-                    <th style="padding: 4px 6px; text-align: right; width: 15%;">Weight</th>
-                    <th style="padding: 4px 6px; text-align: right; width: 15%;">Touch</th>
-                    <th style="padding: 4px 6px; text-align: right; width: 16%;">Pure</th>
-                    <th style="padding: 4px 6px; text-align: center; width: 16%;">Image</th>
-                  </tr>
-                </thead>
-                <tbody style="color: #0f172a;">
-                  ${itemRowsHtml}
-                </tbody>
-                <tfoot>
-                  <tr style="background: #eff6ff; border-top: 1.5px solid #1d5ba6; font-weight: 800; color: #1d5ba6;">
-                    <td colspan="2" style="padding: 5px 6px; text-align: right;">TOTAL (${record.items.length} Items):</td>
-                    <td style="padding: 5px 6px; text-align: right;">${record.totalWeight} g</td>
-                    <td style="padding: 5px 6px; text-align: right;">—</td>
-                    <td style="padding: 5px 6px; text-align: right; color: #c8232c;">${record.totalPure} g</td>
-                    <td style="padding: 5px 6px; text-align: center;">${itemImages.length > 0 ? `${itemImages.length} Photo(s)` : '—'}</td>
-                  </tr>
-                </tfoot>
-              </table>
             </div>
 
-            <!-- Footer Signature Section -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; padding-top: 6px; border-top: 1px dashed #94a3b8; font-size: 11px;">
-              <div style="color: #475569; max-width: 65%;">
-                * Result is based on sample tested at the time of inspection.
+            <!-- Main Two-Column Body: Big Image on LEFT | Product & Testing Details on RIGHT -->
+            <div style="display: grid; grid-template-columns: 42% 58%; gap: 10px; align-items: stretch; flex: 1;">
+              <!-- LEFT SIDE: Large Picture -->
+              <div>
+                ${leftPhotoPanelHtml}
               </div>
-              <div style="text-align: center; min-width: 140px;">
-                <div style="height: 22px;"></div>
-                <div style="border-top: 1px solid #1d5ba6; padding-top: 2px; font-weight: 700; color: #1d5ba6;">
-                  ${escapeHtml(shopSettings.footer || 'Authorized Signatory')}
+
+              <!-- RIGHT SIDE: Customer Meta + Product Details Table + Totals -->
+              <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px; font-size: 11px; font-weight: 700; margin-bottom: 6px; background: #f8fafc; padding: 4px 8px; border: 1px solid #cbd5e1;">
+                    <div>S. No.: <span style="color: #c8232c;">${escapeHtml(record.billNumber)}</span></div>
+                    <div>Date: <span style="color: #0f172a;">${formattedDate}</span></div>
+                    <div style="width: 100%;">Customer: <span style="color: #0f172a;">${escapeHtml(record.customerName)}</span> ${record.customerPhone ? `(${escapeHtml(record.customerPhone)})` : ''}</div>
+                  </div>
+
+                  <table style="width: 100%; border-collapse: collapse; font-size: 11.5px; border: 1.5px solid #1d5ba6;">
+                    <thead>
+                      <tr style="background: #1d5ba6; color: #ffffff; font-size: 10px; text-transform: uppercase;">
+                        <th style="padding: 4px 5px; width: 8%;">#</th>
+                        <th style="padding: 4px 5px; text-align: left; width: 34%;">Product / Item</th>
+                        <th style="padding: 4px 5px; text-align: right; width: 19%;">Weight</th>
+                        <th style="padding: 4px 5px; text-align: right; width: 19%;">Touch</th>
+                        <th style="padding: 4px 5px; text-align: right; width: 20%;">Pure</th>
+                      </tr>
+                    </thead>
+                    <tbody style="color: #0f172a;">
+                      ${itemRowsHtml}
+                    </tbody>
+                    <tfoot>
+                      <tr style="background: #eff6ff; border-top: 1.5px solid #1d5ba6; font-weight: 800; color: #1d5ba6;">
+                        <td colspan="2" style="padding: 5px 6px; text-align: right;">TOTAL (${record.items.length}):</td>
+                        <td style="padding: 5px 6px; text-align: right;">${record.totalWeight} g</td>
+                        <td style="padding: 5px 6px; text-align: right;">—</td>
+                        <td style="padding: 5px 6px; text-align: right; color: #c8232c;">${record.totalPure} g</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                <!-- Footer Signature -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; padding-top: 5px; border-top: 1px dashed #94a3b8; font-size: 10px;">
+                  <div style="color: #475569; max-width: 58%;">
+                    * Tested results apply to the submitted sample.
+                  </div>
+                  <div style="text-align: center; min-width: 120px;">
+                    <div style="height: 16px;"></div>
+                    <div style="border-top: 1px solid #1d5ba6; padding-top: 2px; font-weight: 700; color: #1d5ba6;">
+                      ${escapeHtml(shopSettings.footer || 'Authorized Signatory')}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
